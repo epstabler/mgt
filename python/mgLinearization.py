@@ -15,10 +15,10 @@ def ord_svo(so) -> tuple:
     pts = map(ord_svo, psos)
     if isinstance(nt,tuple) and len(nt) == 2 and \
        isinstance(nt[0],tuple) and ( len(nt[0]) == 0 or isinstance(nt[0][0],str) ): # nt is lex
-      if len(posfs) > 1: return (nt,) + silent((pt,) + tuple(pts))
+      if len(posfs) > 1: return (nt,)
       else: return (nt, pt) + tuple(pts)
     else: # nt is mset
-      if len(posfs) > 1: return silent((pt,) + tuple(pts)) + (nt,)
+      if len(posfs) > 1: return (nt,)
       else: return (pt,) + tuple(pts) + (nt,)
 
 def ord_sov(so) -> tuple:
@@ -32,7 +32,7 @@ def ord_sov(so) -> tuple:
     plsos = list(map(maxx, pwss))
     psos = [x[0] for x in plsos]
     pts = map(ord_sov, psos)
-    if len(posfs) > 1: return silent((pt,) + tuple(pts)) + (nt,)
+    if len(posfs) > 1: return (nt,)
     else: return (pt,) + tuple(pts) + (nt,)
 
 def ord(so) -> tuple:
@@ -50,12 +50,3 @@ def ord(so) -> tuple:
   else: # em
     (pso,([],posfs)) = maxx(fmultiset.toList(pws))
     return (nso, pso, ps, posfs, pwss1)
-
-def silent(ph: tuple) -> tuple:
-  """ maps phTree (nested tuple of lexical items)
-    to isomorphic phTree in which lexical ph content is marked with parens  """
-  if isinstance(ph,tuple) and len(ph) == 2 and \
-     isinstance(ph[0],tuple) and ( len(ph[0]) == 0 or isinstance(ph[0][0],str) ): # lex
-    return ( tuple([w if (w[0]=='(' and w[-1]==')') else '('+w+')' for w in ph[0]]), ph[1] )
-  else:
-    return tuple([silent(x) for x in ph])

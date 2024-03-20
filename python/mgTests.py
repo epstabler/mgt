@@ -590,5 +590,6 @@ def ex27hntlk():
   ph2nltk(ord_svo(ex27f())).draw()
 
 #ex08d()
+#ex25b()
 #ex27hntlk()
-ex27h()
+#ex27h()

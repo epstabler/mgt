@@ -253,4 +253,5 @@ def ex07c():
 def ex07d():
   ppSO(ord_sov(ex07()))
 
-ex07b()
+#ex07b()
+ex07c()

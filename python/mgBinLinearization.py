@@ -11,10 +11,10 @@ def ord_svo(so) -> tuple:
     onso,opso = ord_svo(nso), ord_svo(pso)
     if isinstance(onso,tuple) and len(onso) == 2 and \
        isinstance(onso[0],tuple) and ( len(onso[0]) == 0 or isinstance(onso[0][0],str) ): # lex
-      if len(posfs) > 1: return (onso, silent(opso))
+      if len(posfs) > 1: return (onso,)
       else: return (onso, opso)
     else:
-      if len(posfs) > 1: return (silent(opso), onso)
+      if len(posfs) > 1: return (onso,)
       else: return (opso, onso)
 
 def ord_sov(so) -> tuple:
@@ -25,7 +25,7 @@ def ord_sov(so) -> tuple:
   else:
     (nso, pso, _, posfs) = ord(so)
     onso,opso = ord_sov(nso), ord_sov(pso)
-    if len(posfs) > 1: return (silent(opso), onso)
+    if len(posfs) > 1: return (onso,)
     else: return (opso, onso)
 
 def ord(so: frozenset) -> tuple:
@@ -41,12 +41,3 @@ def ord(so: frozenset) -> tuple:
   else: # em
     (pso,([],posfs)) = maxx(fset.toList(pws))
     return (nso, pso, pfs, posfs)
-
-def silent(ph: tuple) -> tuple:
-  """ maps phTree (nested tuple of lexical items)
-    to isomorphic phTree in which lexical ph content is marked with parens  """
-  if isinstance(ph,tuple) and len(ph) == 2 and \
-     isinstance(ph[0],tuple) and ( len(ph[0]) == 0 or isinstance(ph[0][0],str) ): # lex
-    return ( tuple([w if (w[0]=='(' and w[-1]==')') else '('+w+')' for w in ph[0]]), ph[1] )
-  else:
-    return tuple([silent(x) for x in ph])
