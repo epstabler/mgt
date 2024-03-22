@@ -7,6 +7,7 @@ import qualified Data.List as List
 import Mg
 import MgTransduction
 import MgLinearization
+import MgHm
 
 {--- IO: prettyPrint various structures ---}
 tab 0 = putStr ""
@@ -167,8 +168,8 @@ ex07 = S (MultiSet.fromList [
 
 ex07a = ppSO ex07
 ex07b = ppWS (ell ex07)
-ex07c = ppSO (ord_svo ex07)
-ex07d = ppSO (ord_sov ex07)
+ex07c = ppSO (o_svo ex07)
+ex07d = ppSO (o_sov ex07)
 
 -- Example of Figure 2, demonstrating multiple occurrences
 ex08 = S (MultiSet.fromList [
@@ -194,8 +195,8 @@ ex08 = S (MultiSet.fromList [
                            L (["the man"], ([],[One D, One K, One Scr])) ]) ]) ]) ]) ]) ]) ]) ]) ]) ])
 
 ex08a = ppWS (ell ex08)
-ex08b = ppSO (ord_svo ex08)
-ex08c = ppSO (ord_sov ex08)
+ex08b = ppSO (o_svo ex08)
+ex08c = ppSO (o_sov ex08)
 
 -- this example is from Figure 3
 g121 :: [Lex]
@@ -234,10 +235,10 @@ ex22 = S (MultiSet.fromList [
              ex21 ])
 
 ex22a = ppWS (ell ex22)
-ex22b = ppSO (ord_svo ex22)
-ex22c = ppSO (ord_sov ex22)
+ex22b = ppSO (o_svo ex22)
+ex22c = ppSO (o_sov ex22)
 
--- This is example (10) of Figure 3 but with identical coordinates
+-- This is example (10) of Figure 3 but with identical cooinates
 ex23 :: SO
 ex23 = S (MultiSet.fromList [
              S (MultiSet.fromList [
@@ -249,8 +250,8 @@ ex23 = S (MultiSet.fromList [
              ex21 ])
 
 ex23a = ppWS (ell ex23)
-ex23b = ppSO (ord_svo ex23)
-ex23c = ppSO (ord_sov ex23)
+ex23b = ppSO (o_svo ex23)
+ex23c = ppSO (o_sov ex23)
 
 -- this example is from Figure 4
 ex24 :: SO
@@ -270,8 +271,8 @@ ex24 = S (MultiSet.fromList
                   L (["brambleberries"], ([], [One D])) ]) ]) ]) ]) ])
 
 ex24a = ppWS (ell ex24)
-ex24b = ppSO (ord_svo ex24)
-ex24c = ppSO (ord_sov ex24)
+ex24b = ppSO (o_svo ex24)
+ex24c = ppSO (o_sov ex24)
 
 -- this example is (an English approximation to) Figure 5, left
 ex25 :: SO
@@ -294,10 +295,10 @@ ex25 = S (MultiSet.fromList [
                    L (["who"], ([], [One D,One Wh])) ]) ]) ]) ]) ]) ])
 
 ex25a = ppWS (ell ex25)
-ex25b = ppSO (ord_svo ex25)
-ex25c = ppSO (ord_sov ex25)
+ex25b = ppSO (o_svo ex25)
+ex25c = ppSO (o_sov ex25)
 
--- we can have ATB with any number of coordinates, extending the previous example
+-- we can have ATB with any number of cooinates, extending the previous example
 ex26 :: SO
 ex26 = S (MultiSet.fromList [
          L (["who"], ([], [One D,One Wh])),
@@ -328,8 +329,8 @@ ex26 = S (MultiSet.fromList [
                    L (["who"], ([], [One D,One Wh])) ]) ]) ]) ]) ]) ])
 
 ex26a = ppWS (ell ex26)
-ex26b = ppSO (ord_svo ex26)
-ex26c = ppSO (ord_sov ex26)
+ex26b = ppSO (o_svo ex26)
+ex26c = ppSO (o_sov ex26)
 
 -- example from \S1.3.3 of the paper: replicating Stabler (2001: \S2.1)
 --   but without representing the strings of expressions as triples,
@@ -370,18 +371,19 @@ g133 = [
 
 ex27a = ppMg g133
 
+ex27f :: SO
 ex27f = S (MultiSet.fromList [
           S (MultiSet.fromList [
             L (["which"], ([One N],[One D,One K,One Wh])),
             L (["pie"], ([], [One N])) ]),
           S (MultiSet.fromList [
-            L ([], ([One T,One Wh],[One C])),
+            L (["+"], ([One T,One Wh],[One C])),
             S (MultiSet.fromList [
               S (MultiSet.fromList [
                 L (["the"], ([One N],[One D,One K])),
                 L (["king"], ([], [One N])) ]),
               S (MultiSet.fromList [
-                L (["-s"], ([One Have,One K],[One T])),
+                L (["+s"], ([One Have,One K],[One T])),
                 S (MultiSet.fromList [
                   L (["have"], ([One Been],[One Have])),
                   S (MultiSet.fromList [
@@ -391,7 +393,7 @@ ex27f = S (MultiSet.fromList [
                         L (["the"], ([One N],[One D,One K])),
                         L (["king"], ([], [One N])) ]),
                       S (MultiSet.fromList [
-                        L (["-ing"], ([One V,One D],[One Ving])),
+                        L (["+ing"], ([One V,One D],[One Ving])),
                         S (MultiSet.fromList [
                           S (MultiSet.fromList [
                              L (["which"], ([One N],[One D,One K,One Wh])),
@@ -402,12 +404,13 @@ ex27f = S (MultiSet.fromList [
                                L (["which"], ([One N],[One D,One K,One Wh])),
                                L (["pie"], ([], [One N])) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ])
 
-ex27g =  ppWS(ell(ex27f))
+ex27g = ppSO ex27f
 
-ex27h = ppSO(ord_svo(ex27f))
+ex27h =  ppWS(ell(ex27f))
 
--- ex27hm = ppSO(fa(ord_svo(ex27f)))
+ex27i = ppSO(o_svo(ex27f))
 
-ex27i = ppSO(ord_sov(ex27f))
+ex27j = ppSO(o_sov(ex27f))
 
--- ex27im = ppSO(fa(ord_sov(ex27f)))
+-- ex27im = ppSO(fa(o_sov(ex27f)))
+ex27k = (ppSO.snd) (h 0 ex27f)

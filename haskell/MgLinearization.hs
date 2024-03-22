@@ -7,32 +7,32 @@ import qualified Data.List as List
 import Mg
 import MgTransduction
 
-ord_svo :: SO -> SO
-ord_svo (O t) = (O t) -- NB! recurse only as deeply as necessary
-ord_svo (L (w,l)) = (O (Pl (w,l)))
-ord_svo so = let (nso, pso, _, posfs, pwss) = ord(so) in 
-             let plsos = (map (maxx.(MultiSet.toList)) pwss) in
-             let ts = map (\x -> case (ord_svo.fst) x of (O t) -> t) plsos in
-                case (ord_svo nso, ord_svo pso, posfs) of
-                  (O (Pl i),O t,_:_:_) -> (O ((Pl i)))
-                  (O (Pl i),O t,_) -> (O (Ps ((Pl i):t:ts)))
-                  (O t,O t',_:_:_) -> (O t)
-                  (O t,O t',_) -> (O (Ps (t':(ts ++ [t]))))
+o_svo :: SO -> SO
+o_svo (O t) = (O t) -- NB! recurse only as deeply as necessary
+o_svo (L (w,l)) = (O (Pl (w,l)))
+o_svo so = let (nso, pso, _, posfs, pwss) = o(so) in
+           let plsos = (map (maxx.(MultiSet.toList)) pwss) in
+           let ts = map (\x -> case (o_svo.fst) x of (O t) -> t) plsos in
+              case (o_svo nso, o_svo pso, posfs) of
+                (O (Pl i),O t,_:_:_) -> (O ((Pl i)))
+                (O (Pl i),O t,_) -> (O (Ps ((Pl i):t:ts)))
+                (O t,O t',_:_:_) -> (O t)
+                (O t,O t',_) -> (O (Ps (t':(ts ++ [t]))))
 
-ord_sov :: SO -> SO
-ord_sov (O t) = (O t) -- NB! recurse only as deeply as necessary
-ord_sov (L (w,l)) = (O (Pl (w,l)))
-ord_sov so = let (nso, pso, _, posfs, pwss) = ord(so) in 
-             let plsos = (map (maxx.(MultiSet.toList)) pwss) in
-             let ts = map (\x -> case (ord_sov.fst) x of (O t) -> t) plsos in
-               case (ord_sov nso, ord_sov pso, posfs) of
-                 (O t,O t',_:_:_) -> (O t)
-                 (O t,O t',_) -> (O (Ps ((t':ts)++[t])))
+o_sov :: SO -> SO
+o_sov (O t) = (O t) -- NB! recurse only as deeply as necessary
+o_sov (L (w,l)) = (O (Pl (w,l)))
+o_sov so = let (nso, pso, _, posfs, pwss) = o(so) in 
+           let plsos = (map (maxx.(MultiSet.toList)) pwss) in
+           let ts = map (\x -> case (o_sov.fst) x of (O t) -> t) plsos in
+             case (o_sov nso, o_sov pso, posfs) of
+               (O t,O t',_:_:_) -> (O t)
+               (O t,O t',_) -> (O (Ps ((t':ts)++[t])))
 
--- map SO to what ordering usually depends on: (head, comp, head_features, comp_features, otherCompWSs)
-ord :: SO -> (SO,SO,[Ft],[Ft],[WS])
-ord (S s) = case List.partition negWS (map ell (MultiSet.toList s)) of -- NB! inefficient
-    ([nws],pws:pwss) -> case List.partition ((/= []).fst.snd) (MultiSet.toList nws) of
-        ([(nso,(f:ns,ps))],others) -> case ((List.filter ((== f).head.snd.snd) others),pwss) of
-            ([(pso,([],posfs))],[]) -> (nso, pso, ps, posfs, pwss)        -- for IM, else EM:
-            ([],_) -> let (pso,([],posfs)) = (maxx.(MultiSet.toList)) pws in (nso, pso, ps, posfs, pwss)
+-- map SO to what oering usually depends on: (head, comp, head_features, comp_features, otherCompWSs)
+o :: SO -> (SO,SO,[Ft],[Ft],[WS])
+o (S s) = case List.partition negWS (map ell (MultiSet.toList s)) of -- NB! inefficient
+  ([nws],pws:pwss) -> case List.partition ((/= []).fst.snd) (MultiSet.toList nws) of
+      ([(nso,(f:ns,ps))],others) -> case ((List.filter ((== f).head.snd.snd) others),pwss) of
+          ([(pso,([],posfs))],[]) -> (nso, pso, ps, posfs, pwss)        -- for IM, else EM:
+          ([],_) -> let (pso,([],posfs)) = (maxx.(MultiSet.toList)) pws in (nso, pso, ps, posfs, pwss)
