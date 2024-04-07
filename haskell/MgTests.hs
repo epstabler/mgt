@@ -172,6 +172,7 @@ ex07c = ppSO (o_svo ex07)
 ex07d = ppSO (o_sov ex07)
 
 -- Example of Figure 2, demonstrating multiple occurrences
+ex08 :: SO
 ex08 = S (MultiSet.fromList [
         L ([], ([One T],[One C])),
         S (MultiSet.fromList
@@ -199,6 +200,51 @@ ex08b = ppSO (o_svo ex08)
 ex08c = ppSO (o_sov ex08)
 
 -- this example is from Figure 3
+ex09 :: SO
+ex09 =
+ S (MultiSet.fromList [
+   L ([""], ([One T], [One C])),
+   S (MultiSet.fromList [
+     L (["I"], ([],[One D, One K])),
+     S (MultiSet.fromList [
+       L ([""], ([One V,One K], [One T])),
+       S (MultiSet.fromList [
+         L (["I"], ([],[One D, One K])),
+         S (MultiSet.fromList [
+           L (["wonder"], ([One C,One D], [One V])),
+           S (MultiSet.fromList [
+             S (MultiSet.fromList [
+               L ([""], ([One T,One Wh], [One C])),
+               S (MultiSet.fromList [
+                 S (MultiSet.fromList [
+                   L (["+s"], ([One V,One K], [One T])),
+                   S (MultiSet.fromList [
+                     L (["be"], ([One A], [One V])),
+                     S (MultiSet.fromList [
+                       L (["how"], ([One A], [One A,One Wh])),
+                       S (MultiSet.fromList [
+                         L (["likely"], ([One T],[One A])),
+                          S (MultiSet.fromList [
+                            L (["to"], ([One V], [One T])),
+                            S (MultiSet.fromList [
+                              L (["win"], ([One D], [One V])),
+                              L (["John"], ([],[One D, One K])) ]) ]) ]) ]) ]) ]),
+               L (["John"], ([],[One D, One K])) ]) ]),
+           S (MultiSet.fromList [
+             L (["how"], ([One A], [One A,One Wh])),
+             S (MultiSet.fromList [
+               L (["likely"], ([One T],[One A])),
+               S (MultiSet.fromList [
+                 L (["to"], ([One V], [One T])),
+                 S (MultiSet.fromList [
+                   L (["win"], ([One D], [One V])),
+                   L (["John"], ([],[One D, One K])) ]) ]) ]) ]) ]) ]) ]) ]) ]) ])
+
+ex09a = ppWS (ell ex09)
+ex09b = ppSO (o_svo ex09)
+ex09c = ppSO (o_sov ex09)
+
+-- this example is from Figure 4
 g121 :: [Lex]
 g121 = [
     ([], ([One T], [One C])),
@@ -238,7 +284,7 @@ ex22a = ppWS (ell ex22)
 ex22b = ppSO (o_svo ex22)
 ex22c = ppSO (o_sov ex22)
 
--- This is example (10) of Figure 3 but with identical cooinates
+-- This is example (10) of Figure 4 but with identical coordinates
 ex23 :: SO
 ex23 = S (MultiSet.fromList [
              S (MultiSet.fromList [
@@ -253,7 +299,7 @@ ex23a = ppWS (ell ex23)
 ex23b = ppSO (o_svo ex23)
 ex23c = ppSO (o_sov ex23)
 
--- this example is from Figure 4
+-- this example is from Figure 5
 ex24 :: SO
 ex24 = S (MultiSet.fromList
         [ L ([], ([One V],[One C])),
@@ -274,7 +320,7 @@ ex24a = ppWS (ell ex24)
 ex24b = ppSO (o_svo ex24)
 ex24c = ppSO (o_sov ex24)
 
--- this example is (an English approximation to) Figure 5, left
+-- this example is (an English approximation to) Figure 6, left
 ex25 :: SO
 ex25 = S (MultiSet.fromList [
          L (["who"], ([], [One D,One Wh])),
@@ -298,7 +344,7 @@ ex25a = ppWS (ell ex25)
 ex25b = ppSO (o_svo ex25)
 ex25c = ppSO (o_sov ex25)
 
--- we can have ATB with any number of cooinates, extending the previous example
+-- we can have ATB with any number of coordinates, extending the previous example
 ex26 :: SO
 ex26 = S (MultiSet.fromList [
          L (["who"], ([], [One D,One Wh])),
@@ -405,11 +451,8 @@ ex27f = S (MultiSet.fromList [
                                L (["pie"], ([], [One N])) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ])
 
 ex27g = ppSO ex27f
-
-ex27h =  ppWS(ell(ex27f))
-
+ex27h = ppWS(ell(ex27f))
 ex27i = ppSO(o_svo(ex27f))
-
 ex27j = ppSO(o_sov(ex27f))
 
 -- ex27im = ppSO(fa(o_sov(ex27f)))

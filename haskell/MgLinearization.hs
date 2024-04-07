@@ -29,7 +29,7 @@ o_sov so = let (nso, pso, _, posfs, pwss) = o(so) in
                (O t,O t',_:_:_) -> (O t)
                (O t,O t',_) -> (O (Ps ((t':ts)++[t])))
 
--- map SO to what oering usually depends on: (head, comp, head_features, comp_features, otherCompWSs)
+-- map SO to what ordering usually depends on: (head, comp, head_features, comp_features, otherCompWSs)
 o :: SO -> (SO,SO,[Ft],[Ft],[WS])
 o (S s) = case List.partition negWS (map ell (MultiSet.toList s)) of -- NB! inefficient
   ([nws],pws:pwss) -> case List.partition ((/= []).fst.snd) (MultiSet.toList nws) of

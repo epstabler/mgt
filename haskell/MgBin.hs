@@ -16,7 +16,7 @@ type WS = Set (LSO)
 mrg :: [SO] -> SO
 mrg sos = S (Set.fromList sos)
 
--- already matched features can now be `forgotten'
+-- already matched features can be `forgotten'
 ck :: [Label] -> [Label]
 ck [(_:nns,nps), ([],_:pps) ] = [(nns,nps), ([],pps) ]
 

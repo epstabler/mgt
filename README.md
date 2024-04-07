@@ -2,7 +2,7 @@
 MG decomposed and reformulated with interfaces, described in 
 [Stabler 2024 "Modular minimalist grammars" - slides](https://github.com/epstabler/mgt/slidesAnnotatedApps3.pdf)
 
-A longer paper describing the project is forthcoming.
+A longer paper describing the project is forthcoming, and will be posted in ../nmt
 
 ** preliminary implementations, in progress **
 
