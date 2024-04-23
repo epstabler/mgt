@@ -35,8 +35,8 @@ match:: [WS] -> ([LSO],[LSO])
 match (ws0:wss) = case List.partition ((/= []).fst.snd) (MultiSet.toList ws0) of
     ([h],others) -> let (f,plus) = (fplus.head.fst.snd) h in
       case (List.partition ((== (One f)).head.snd.snd) others,wss) of
-        (([c],others'),[]) -> ([h,c],others')                                        -- IM c
-        (([],_),ws1:wss) -> let lsos = (MultiSet.toList ws1) in let c = maxx lsos in -- EM c
+        (([c],others'),[]) -> ([h,c],others')                                        -- IM
+        (([],_),ws1:wss) -> let lsos = (MultiSet.toList ws1) in let c = maxx lsos in -- EM
           if ((/= One f).head.snd.snd) c
           then error "match complement feature clash"
           else let others' = List.filter (/= c) lsos in
@@ -47,7 +47,7 @@ match (ws0:wss) = case List.partition ((/= []).fst.snd) (MultiSet.toList ws0) of
     fplus :: Ft -> (F, Bool)             -- parse the one/plus features
     fplus ft = case ft of (One f) -> (f, False); (Plus f) -> (f, True)
 
-    atb :: Ft -> [LSO] -> [WS] -> [LSO]  -- collect comps with first feature f and others(=movers)
+    atb :: Ft -> [LSO] -> [WS] -> [LSO]  -- collect comps with first feature f, and others
     atb _ _ [] = []
     atb ft movers (ws:wss) = case List.partition ((== ft).head.snd.snd) (MultiSet.toList ws) of
         ([c'],others) -> if others == movers then c':(atb ft movers wss) else (error "match: ATB error")
