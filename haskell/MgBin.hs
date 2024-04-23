@@ -18,7 +18,7 @@ mrg sos = S (Set.fromList sos)
 
 -- already matched features can be `forgotten'
 ck :: [Label] -> [Label]
-ck [(_:nns,nps), ([],_:pps) ] = [(nns,nps), ([],pps) ]
+ck [ (_:nns,nps), ([],_:pps) ] = [ (nns,nps), ([],pps) ]
 
 -- constituents with no remembered features can be `forgotten'
 t :: [LSO] -> [LSO]
