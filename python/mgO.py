@@ -1,6 +1,6 @@
-""" mgLinearization.py (not annotated for mypy, since mypy does not know frozendict) """
+""" mgO.py (not annotated for mypy, since mypy does not know frozendict) """
 import frozendict
-from mgTransduction import *
+from mgL import *
 
 def ord_svo(so) -> tuple:
   """ maps so to ordered phTree """

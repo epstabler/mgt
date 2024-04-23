@@ -1,4 +1,4 @@
-""" mgTransduction.py (not annotated for mypy, since mypy does not know frozendict) """
+""" mgL.py (not annotated for mypy, since mypy does not know frozendict) """
 import frozendict
 from mg import *
 
