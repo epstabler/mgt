@@ -1,4 +1,4 @@
-module MgBinTransduction where
+module MgBinL where
 import Data.Set (Set)
 import qualified Data.Set as Set
 import Data.List

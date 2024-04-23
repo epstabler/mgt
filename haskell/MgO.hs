@@ -1,11 +1,11 @@
-module MgLinearization where  -- Multiset needed. E.g., start ghci with: stack ghci --package multiset
+module MgO where  -- Multiset needed. E.g., start ghci with: stack ghci --package multiset
 import Data.MultiSet (MultiSet)
 import qualified Data.MultiSet as MultiSet
 import Data.List
 import qualified Data.List as List
 
 import Mg
-import MgTransduction
+import MgL
 
 o_svo :: SO -> SO
 o_svo (O t) = (O t) -- NB! recurse only as deeply as necessary

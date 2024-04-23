@@ -5,9 +5,9 @@ import Data.List
 import qualified Data.List as List
 
 import Mg
-import MgTransduction
-import MgLinearization
-import MgHm
+import MgL
+import MgO
+import MgH
 
 {--- IO: prettyPrint various structures ---}
 tab 0 = putStr ""

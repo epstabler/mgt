@@ -5,8 +5,8 @@ import Data.List
 import qualified Data.List as List
 
 import MgBin
-import MgBinTransduction
-import MgBinLinearization
+import MgBinL
+import MgBinO
 
 {--- IO: prettyPrint various structures ---}
 tab 0 = putStr ""

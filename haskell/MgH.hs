@@ -1,12 +1,12 @@
-module MgHm where  -- Multiset needed. E.g., start ghci with: stack ghci --package multiset
+module MgH where  -- Multiset needed. E.g., start ghci with: stack ghci --package multiset
 import Data.MultiSet (MultiSet)
 import qualified Data.MultiSet as MultiSet
 import Data.List
 import qualified Data.List as List
 
 import Mg
-import MgTransduction
-import MgLinearization
+import MgL
+import MgO
 
 -- where i = #heads needed by selector above, (h i so) = (heads, so')
 h :: Int -> SO -> ([String], SO)

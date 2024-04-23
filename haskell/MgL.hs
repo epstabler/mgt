@@ -1,4 +1,4 @@
-module MgTransduction where  -- Multiset needed. E.g., start ghci with: stack ghci --package multiset
+module MgL where  -- Multiset needed. E.g., start ghci with: stack ghci --package multiset
 import Data.MultiSet (MultiSet)
 import qualified Data.MultiSet as MultiSet
 import Data.List

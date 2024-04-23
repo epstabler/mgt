@@ -33,27 +33,27 @@ maxx lsos = foldr1 (\x y ->if ((soSize.fst) x) >= ((soSize.fst) y) then x else y
 
 match:: [WS] -> ([LSO],[LSO])
 match (ws0:wss) = case List.partition ((/= []).fst.snd) (MultiSet.toList ws0) of
-    ([h],others) -> let (f,plus) = ((fplus.head.fst.snd) h) in
+    ([h],others) -> let (f,plus) = (fplus.head.fst.snd) h in
       case (List.partition ((== (One f)).head.snd.snd) others,wss) of
-        (([c],others'),[]) -> ([h,c],others')  -- IM for One feature; otherwise EM:
-        (([],_),ws1:wss) -> let lsos = (MultiSet.toList ws1) in let c = maxx lsos in
-          if (((/= One f).head.snd.snd) c)
-          then (error "match complement feature clash")
+        (([c],others'),[]) -> ([h,c],others')                                        -- IM c
+        (([],_),ws1:wss) -> let lsos = (MultiSet.toList ws1) in let c = maxx lsos in -- EM c
+          if ((/= One f).head.snd.snd) c
+          then error "match complement feature clash"
           else let others' = List.filter (/= c) lsos in
             if plus && others' == others
             then (h:c:(atb (One f) others wss), others)
             else if wss == [] then ([h,c], others ++ others') else (error ("match: too many wss"))
   where
-    fplus :: Ft -> (F, Bool)             -- parse the feature
+    fplus :: Ft -> (F, Bool)             -- parse the one/plus features
     fplus ft = case ft of (One f) -> (f, False); (Plus f) -> (f, True)
 
-    atb :: Ft -> [LSO] -> [WS] -> [LSO]  -- collect comps with first feature f and others=movers
+    atb :: Ft -> [LSO] -> [WS] -> [LSO]  -- collect comps with first feature f and others(=movers)
     atb _ _ [] = []
     atb ft movers (ws:wss) = case List.partition ((== ft).head.snd.snd) (MultiSet.toList ws) of
         ([c'],others) -> if others == movers then c':(atb ft movers wss) else (error "match: ATB error")
 
 smc :: [LSO] -> WS
-smc lsos = if smc' [] lsos then (MultiSet.fromList lsos) else (error "smc violation")
+smc lsos = if smc' [] lsos then MultiSet.fromList lsos else error "smc violation"
   where
     smc' _ [] = True
     smc' sofar ((s,([],p:ps)):lsos) = if elem p sofar then False else smc' (p:sofar) lsos

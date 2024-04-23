@@ -30,21 +30,21 @@ soSize (S so) = foldr (\x y -> (soSize x) + y) 1 (Set.toList so)
 soSize (O (Ps ts)) = foldr (\x y -> (soSize (O x)) + y) 1 ts
 soSize _ = 1
 
--- given LSOs from a positive WS, return largest, i.e. the head
+-- given LSOs, return largest, i.e. the head
 maxx :: [LSO] -> LSO
 maxx lsos = foldr1 (\x y ->if ((soSize.fst) x) >= ((soSize.fst) y) then x else y) lsos
 
 -- given WS, return matching ([head,comp], [other LSOs])
 match:: [WS] -> ([LSO],[LSO])
 match (ws0:wss) = case List.partition ((/= []).fst.snd) (Set.toList ws0) of
-    ([h],others) -> let f = ((head.fst.snd) h) in case (List.partition ((== f).head.snd.snd) others, wss) of
-      (([c],others'),[]) -> ([h,c],others')
-      (([],_),[ws1]) -> case List.partition ((== f).head.snd.snd) (Set.toList ws1) of
+    ([h],others) -> let f = (head.fst.snd) h in case (List.partition ((== f).head.snd.snd) others, wss) of
+      (([c],others'),[]) -> ([h,c],others')                                            -- IM
+      (([],_),[ws1]) -> case List.partition ((== f).head.snd.snd) (Set.toList ws1) of  -- EM
         ([c],others') -> ([h,c], others ++ others')
 
 -- if LSOs satisfy shortest move constraint, return WS
 smc :: [LSO] -> WS
-smc lsos = if smc' [] lsos then (Set.fromList lsos) else (error "smc violation")
+smc lsos = if smc' [] lsos then Set.fromList lsos else error "smc violation"
   where
     smc' _ [] = True
     smc' sofar ((s,([],p:ps)):lsos) = if elem p sofar then False else smc' (p:sofar) lsos
