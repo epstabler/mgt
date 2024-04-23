@@ -42,7 +42,7 @@ match (ws0:wss) = case List.partition ((/= []).fst.snd) (MultiSet.toList ws0) of
           else let others' = List.filter (/= c) lsos in
             if plus && others' == others
             then (h:c:(atb (One f) others wss), others)
-            else if wss == [] then ([h,c], others ++ others') else (error ("match: too many wss"))
+            else if wss == [] then ([h,c], others ++ others') else error ("match: too many wss")
   where
     fplus :: Ft -> (F, Bool)             -- parse the one/plus features
     fplus ft = case ft of (One f) -> (f, False); (Plus f) -> (f, True)
@@ -50,7 +50,7 @@ match (ws0:wss) = case List.partition ((/= []).fst.snd) (MultiSet.toList ws0) of
     atb :: Ft -> [LSO] -> [WS] -> [LSO]  -- collect comps with first feature f, and others
     atb _ _ [] = []
     atb ft movers (ws:wss) = case List.partition ((== ft).head.snd.snd) (MultiSet.toList ws) of
-        ([c'],others) -> if others == movers then c':(atb ft movers wss) else (error "match: ATB error")
+        ([c'],others) -> if others == movers then c':(atb ft movers wss) else error "match: ATB error"
 
 smc :: [LSO] -> WS
 smc lsos = if smc' [] lsos then MultiSet.fromList lsos else error "smc violation"
