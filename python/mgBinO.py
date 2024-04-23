@@ -1,5 +1,5 @@
-""" mgBinLinearization.py (since written in a functional style, annotated for mypy) """
-from mgBinTransduction import *
+""" mgBinO.py (since written in a functional style, annotated for mypy) """
+from mgBinL import *
 
 def ord_svo(so) -> tuple:
   """ maps so to ordered phTree """

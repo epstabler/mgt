@@ -1,5 +1,5 @@
 import sys
-from mgBinLinearization import *
+from mgBinO import *
 
 def tab(n):
   """ print n spaces """

@@ -1,4 +1,4 @@
-""" mgBinTransduction.py (since written in a functional style, annotated for mypy) """
+""" mgBinL.py (since written in a functional style, annotated for mypy) """
 from mgBin import *
 
 def negWS(ws) -> bool:
