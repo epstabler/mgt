@@ -1,10 +1,7 @@
-# nmg
-MG decomposed and reformulated with interfaces, inspired in part by 3 papers by Marcolli&al 2024:
-["Mathematical structure of syntactic merge"](https://arxiv.org/abs/2305.18278),
-["Old and new minimalism"](https://arxiv.org/abs/2306.10270),
-["Syntax-semantics interface: An algebraic model"](https://arxiv.org/abs/2311.06189).
+# mgt
+MG decomposed and reformulated with interfaces.
 
-A paper describing the project is forthcoming.
+Preliminary description in slides. A paper describing the project is forthcoming.
 
 ** preliminary implementations, in progress **
 
