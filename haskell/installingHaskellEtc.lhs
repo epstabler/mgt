@@ -50,7 +50,7 @@ For the {\tt installingHaskellEtc.lhs} file I am editing now,
 For code documentation, line-by-line, {\tt lhs2tex}
 produces a latex file for generating pdf, 
 the pdf which you are presumably looking at now.
-This file, {\tt lhs-example.pdf},
+This file, {\tt installingHaskellEtc.pdf},
 is produced and opened with these steps:
 \begin{verbatim}
 % lhs2tex -o installingHaskellEtc.tex installingHaskellEtc.lhs
@@ -58,14 +58,14 @@ is produced and opened with these steps:
 % open installingHaskellEtc.pdf
 \end{verbatim}
 Here in the pdf format,
-the Haskell code which is now in {\tt lhs2tex-example.hs} looks like this:
+the Haskell code which is now in {\tt installingHaskellEtc.hs} looks like this:
 \begin{code}
 main :: IO ()
 main = putStrLn "Hello, world!"
 \end{code}
 
 \medskip
-For code publication, the Haskell code in {\tt lhs2tex-example.hs} can be much more colorful
+For code publication, the Haskell code in {\tt installingHaskellEtc.hs} can be much more colorful
 and perhaps more beautiful with {\tt minted}:
 \inputminted[frame=leftline,framesep=3mm]{haskell}{installingHaskellEtc.hs}
 
