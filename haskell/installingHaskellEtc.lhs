@@ -14,7 +14,7 @@
 \begin{document}\parindent=0pt
 \phantom{.}\hfill\timestamp
 
-\paragraph{Intalling Haskell.}
+\paragraph{Installing Haskell.}
 On linux or mac, install Haskell with ghcup, from
 \begin{verbatim}
 https://www.haskell.org/ghcup/install/
