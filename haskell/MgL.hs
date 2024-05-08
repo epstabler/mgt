@@ -15,7 +15,7 @@ ell (S s) = case List.partition negWS (map ell (MultiSet.toList s)) of
   ([nws],pws:pwss) -> case List.partition ((/= []).fst.snd) (MultiSet.toList nws) of
       ([(nso,(f:ns,ps))],others) -> case List.filter ((== f).head.snd.snd) others of
           [(pso,plabel)] -> if (fst.maxx) (MultiSet.toList pws) /= pso  -- IM
-                            then (error "ell: move-over-merge violation")
+                            then error "ell: move-over-merge violation"
                             else d [nws]
           [] -> d (nws:pws:pwss) -- EM
 

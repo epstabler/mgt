@@ -8,7 +8,7 @@ import Mg
 import MgL
 import MgO
 
--- where i = #heads needed by selector above, (h i so) = (heads, so')
+-- where i = #heads needed by c-commanding selector, (h i so) = (heads, so')
 h :: Int -> SO -> ([String], SO)
 h 0 (L lex) = ([], L lex)
 h i (S s) = case List.partition negWS (map ell (MultiSet.toList s)) of
@@ -28,10 +28,10 @@ h i (S s) = case List.partition negWS (map ell (MultiSet.toList s)) of
 atbh :: Int -> [String] -> [WS] -> [SO]  -- collect comps with hs extracted
 atbh _ _ [] = []
 atbh i hs (pws:pwss) = case h i ((fst.maxx.(MultiSet.toList)) pws) of
-     (hs', pso) -> if hs' == hs then pso:(atbh i hs pwss) else (error "atbh error")
+     (hs', pso) -> if hs' == hs then pso:(atbh i hs pwss) else error "atbh error"
 
-inc :: [String] -> Int -- map [w] to # head-incorporator +'s on w, else 0
+inc :: [String] -> Int -- map [w] to number of head-incorporator +'s on w, else 0
 inc [] = 0
-inc (w:_) = cc w where
-    cc ('+' : s) = 1 + (cc s)
-    cc _ = 0
+inc (w:_) = plusCnt w where
+    plusCnt ('+' : s) = 1 + (plusCnt s)
+    plusCnt _ = 0

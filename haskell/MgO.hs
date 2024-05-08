@@ -34,5 +34,6 @@ o :: SO -> (SO,SO,[Ft],[Ft],[WS])
 o (S s) = case List.partition negWS (map ell (MultiSet.toList s)) of -- NB! inefficient
   ([nws],pws:pwss) -> case List.partition ((/= []).fst.snd) (MultiSet.toList nws) of
       ([(nso,(f:ns,ps))],others) -> case ((List.filter ((== f).head.snd.snd) others),pwss) of
-          ([(pso,([],posfs))],[]) -> (nso, pso, ps, posfs, pwss)        -- for IM, else EM:
-          ([],_) -> let (pso,([],posfs)) = (maxx.(MultiSet.toList)) pws in (nso, pso, ps, posfs, pwss)
+          ([(pso,([],posfs))],[]) -> (nso, pso, ps, posfs, pwss)           -- IM
+          ([],_) -> let (pso,([],posfs)) = (maxx.(MultiSet.toList)) pws in 
+            (nso, pso, ps, posfs, pwss)                                    -- EM
