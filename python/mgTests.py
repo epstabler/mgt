@@ -1,6 +1,6 @@
 """ mgTests.py """
 import frozendict
-from mgLinearization import *
+from mgO import *
 #from nltk.tree import Tree # optional -- for graphical display
 
 def label2str(label):
@@ -592,4 +592,4 @@ def ex27hntlk():
 #ex08d()
 #ex25b()
 #ex27hntlk()
-#ex27h()
+ex27h()
