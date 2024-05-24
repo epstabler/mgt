@@ -9,7 +9,7 @@ Preliminary description in slides. A paper describing the project is forthcoming
 
 An implementation of merge, *-merge, with labeling, head movement, linearization, and m-merger.
 
-Haskell is a typed and higher order language, good for carefully assessing the anatomy of these processes.
+Haskell is a typed higher order language, good for carefully assessing the anatomy of these processes.
 This code provides the clearest formulation of this grammar formalism.
 
 ## python/ 
