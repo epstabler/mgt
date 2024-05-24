@@ -1,97 +1,68 @@
-""" mg.py (not annotated for mypy, since mypy does not know frozendict) """
-import frozendict, fmultiset
-from listfs import * # for partition, unzip
+""" https://github.com/epstabler/mgt/tree/main/python/mg.py """
+from mgTypes import *     # defines classes of objects: LI, SO, Label, WS
+from typing import Tuple  # for type-checking with mypy
 
-def mrg(lst: list):
-  """ merge """
-  return fmultiset.fromList(lst)
+def mrg(seq: list) -> SO:
+  """ merge: form multiset from sequence of SOs """
+  return SO(seq)
 
-def ck(labels: list) -> list:
-  """ remove first features from already matched labels[0], labels[1] and T for rest """
-  (nns,nps),((),pps) = labels[0],labels[1]
-  return ((nns[1:],nps), ((),pps[1:])) + tuple([((),()) for label in labels[2:]])
+def ck(labels: list) -> list: 
+  """ remove first features from labels """
+  return [f.ck() for f in labels[0:2]] + [Label((),()) for f in labels[2:]]
 
-def t(lsos:list) -> list:
-  """ remove LSOs with no features in their label """
-  return [x for x in lsos if x[1][1]]
+def t(ws: WS) -> WS:
+  """ remove SOs with no features in their label """
+  return ws.pfilter(lambda x: not(x[1].is_empty()))
 
-def soSize(so) -> int:
-  """ calculate the size of a syntactic object """
-  if isinstance(so,tuple) and len(so) == 2 and \
-     isinstance(so[0],tuple) and ( len(so[0]) == 0 or isinstance(so[0][0],str) ): # lex
-    return 1
-  elif isinstance(so,frozendict.frozendict): # fmultiset
-    return 1 + sum(map(soSize, fmultiset.toList(so)))
-  else:  # phtree
-    return 1 + sum(map(soSize, so))
+def fplus(feature) -> Tuple[str,bool]:
+  """ parse feature """
+  if feature[-1] == '+': return (feature[:-1], True)
+  else: return (feature, False)
 
-def maxx(lsos: list) -> tuple:
-  """ given LSOs (of a WS), return LSO with largest SO (the head) """
-  sofar = 0
-  maxLSO = ((()),((),()))
-  for lso in lsos:
-    lsoSize = soSize(lso[0])
-    if lsoSize > sofar:
-      sofar = lsoSize
-      maxLSO = lso
-  return maxLSO
-
-def smc(lsos: list):
-  """ if LSOs have no pos feature in common, return them """
-  firstPosFeatures = [lso[1][1][0] for lso in lsos if lso[1][0] == ()]
-  if len(firstPosFeatures) < len(set(firstPosFeatures)):
-    return fmultiset.fromList([])
+def match(wss:list) -> Tuple[WS,WS]:
+  """ partition elements of elements of WSs into (matchingWS, non-matchingWS) """
+  (negwss, poswss) = partition (lambda x: x.is_neg(), wss) ## partition neg WSs (def in mgTypes.py)
+  if len(negwss) != 1: raise RuntimeError("match: too many neg workspaces")
+  so0, sos0, label0, labels0 = negwss[0]._sos[0], negwss[0]._sos[1:], negwss[0]._labels[0], negwss[0]._labels[1:]
+  (f, plus) = fplus(label0._neg[0])
+  (IMmatches, IMothers) = WS(sos0,labels0).ppartition(lambda x: x[1]._pos[0] == f) # partition matches
+  if IMmatches._sos:
+    if poswss != []: raise RuntimeError("match: too many im pos workspaces")
+    so1, label1 = IMmatches._sos[0], IMmatches._labels[0]
+    return ( WS([so0,so1], [label0, label1]), IMothers )
   else:
-    return fmultiset.fromList(lsos)
-
-def match(wss:list) -> tuple:
-  """ given list of workspaces, return ([head,complement],otherLSOs) """
-  (ws0,wss0) = (wss[0],wss[1:])
-  (heads, others) = partition(lambda lso: lso[1][0] != (), fmultiset.toList(ws0))
-  if not(len(heads)==1): raise RuntimeError("match: 0 or >1 neg lsos in ws0")
-  h = heads[0]
-  f = h[1][0][0]
-  if f[-1] == '+':
-    f, plus = f[:-1], True
-  else:
-    plus = False
-  (ics,iothers) = partition(lambda lso: lso[1][1][0] == f, others)
-  if ics and wss0 == []:    # im
-    return ([h,ics[0]], iothers)
-  elif ics==[] and len(wss0)>0:   # em
-    ws1 = wss0[0]
-    lsos = fmultiset.toList(ws1)
-    c = maxx(lsos)
-    if c[1][1][0] != f:
-      raise RuntimeError("match: %r != %r" % (f,c[1][1][0]))
-    else:
-      others1 = [x for x in lsos if x != c]
-      if plus and others == others1:
-        return ([h,c]+atb(f, others, wss0[1:]), others)
-      elif wss0[1:] == []:
-        return ([h,c], others + others1)
+    pws, pwss = poswss[0], poswss[1:]
+    (EMmatches, EMothers) = pws.ppartition(lambda x: x[1]._pos[0] == f) # partition matches
+    if EMmatches._sos:
+      so1, label1 = EMmatches._sos[0], EMmatches._labels[0]
+      if plus and str(IMothers) == str(EMothers): # str to avoid comparison issues
+        moreComps = atb(label1, EMothers, pwss)
+        return ( WS([so0,so1], [label0, label1]).pappend(moreComps), IMothers )
       else:
-        raise RuntimeError("match: too many wss")
+        if pwss != []: raise RuntimeError("match: too many em pos workspaces")
+        return ( WS([so0,so1], [label0, label1]), IMothers.pappend(EMothers) )
+    else: raise RuntimeError("match: no matching pos workspaces")
 
-def atb(f, movers, wss):
-  """ collect comps with first feature f and others==movers """
-  if wss == []:
-    return []
-  else:
-    ws1 = wss[0]
-    lsos = fmultiset.toList(ws1)
-    c = maxx(lsos)
-    if c[1][1][0] != f:
-      raise RuntimeError("match: complement clash")
+def atb(label, movers, wss) -> WS:
+  additionalComplementWS = WS([],[])
+  for ws in wss:
+    (matches, others) = ws.ppartition(lambda x: str(x[1]) == str(label)) # str to avoid comparison issues
+    if len(matches._sos) == 1: # and others == movers:
+      additionalComplementWS = additionalComplementWS.pappend(matches)
     else:
-      others = [x for x in lsos if x != c]
-      if others != movers:
-        raise RuntimeError("match: mover clash")
-      else:
-        return [c] + atb(f, movers, wss[1:])
+      raise RuntimeError("atb: non-matching pos workspaces")
+  return additionalComplementWS
 
-def d(wss:list):
+def smc(ws: WS) -> WS:
+  """ if WS has no 2 pos labels with same 1st feature, return WS """
+  sofar = []
+  for label in ws._labels:
+    if label.is_pos():
+      if label._pos[0] in sofar: raise RuntimeError('smc violation blocked')
+      else: sofar.append(label._pos[0])
+  return ws
+
+def d(wss:list) -> WS:
   """ the derivational step: given list of workspaces, return derived workspace """
-  (matched, movers) = match(wss)
-  (sos,labels) = unzip(matched)
-  return smc( t( list(zip( [mrg(sos)]+sos[1:], ck(labels))) + movers))
+  (matches, others) = match(wss)
+  return smc( t( WS( [mrg(matches._sos)] + matches._sos[1:], ck(matches._labels) ) ).pappend(others) )

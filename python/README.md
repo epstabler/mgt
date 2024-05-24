@@ -11,16 +11,10 @@ For structure display, I use nltk which can be installed with:
 This code was designed to mimic the prior Haskell implementation, so it
 has a functional style.
 
-To run a simple example of binary merge, type:
+To run a simple example of merge, type:
 
 ```
-> python MgcBinTests
-```
-
-To use Mgc with its unbounded branching,
-
-```
-> python MgcTests
+> python MgTests
 ```
 
 See the code and comments for many other examples.

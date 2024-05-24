@@ -1,595 +1,413 @@
-""" mgTests.py """
-import frozendict
-from mgO import *
-#from nltk.tree import Tree # optional -- for graphical display
+""" https://github.com/epstabler/mgt/tree/main/python/mgTests.py """
+from mgO import *  # this imports frozendict, mgTypes, mg, mgL, mgH and mgO
+from nltk.tree import Tree # optional -- for graphical display
 
-def label2str(label):
-  """ convert label to pretty string """
-  (negfs, posfs) = label
-  if negfs == ():
-    if posfs == (): return 'T'
-    else: return '.'.join(posfs)
-  else:
-    return '.'.join(negfs) + ' -o ' + '.'.join(posfs)
-
-def lex2str(pair):
-  """ convert lexical item to pretty string """
-  (words,label) = pair
-  if words == []:
-      return "([], %s)" % label2str(f)
-  else:
-      return '(%s, %s)' % (' '.join(words), label2str(label))
-
-def ppMg(g):
-    """ pretty print grammar """
-    for i in g: print(lex2str(i))
-
-def ppSO(so):
-    """ pretty print SO """
-    print(so2str(0,so))
-
-def so2str(i,so):
-  """ return pretty string representation of so """
-  if isinstance(so,tuple) and len(so) == 2 and \
-     isinstance(so[0],tuple) and ( len(so[0]) == 0 or isinstance(so[0][0],str) ): # lex
-    return '(%s,%s)' % (" ".join(so[0]), label2str(so[1]))
-  elif isinstance(so,frozendict.frozendict): # set
-    sos = fmultiset.toList(so)
-    s = '{ '
-    for j,x in enumerate(sos):
-      s += so2str(i+2, x)
-      if j < len(sos)-1:
-        s += "\n" + (i * ' ')
-    s += ' }'
-    return s
-  else: # phTree
-    return ph2str(i,so)
-
-def so2str0(n, so): # derivation t, a nested list, as pretty string
-    if isinstance(so,tuple) and len(so) == 2 and \
-         isinstance(so[0],tuple) and ( len(so[0]) == 0 or isinstance(so[0][0],str) ): # lex
-        lexStr = '(%s,%s)' % (" ".join(so[0]), label2str(so[1]))
-        return '%s%s' % (n*' ', lexStr)
-    elif isinstance(so,frozendict.frozendict): # set
-        sos = fmultiset.toList(so)
-        if isinstance(sos[0], list):
-            s = '%s{\n%s' % ((n*' '),so2str(n, sos[0]))
-            for element in sos[1:]: s += ',\n%s' % so2str(n+2, element)
-        else:
-            s = '%s{ %s' % (n*' ', so2str(n, sos[0]))
-            for element in sos[1:]: s += ',\n%s' % so2str(n+2, element)
-        return(s + ' }')
-    elif (isinstance(so, list) or isinstance(so, tuple)) and len(so)>0:
-        if isinstance(so[0], list):
-            s = '%s[\n%s' % ((n*' '), so2str(n, sos[0]))
-            for element in sos[1:]: s += ',\n%s' % so2str(n+2, element)
-        else:
-            s = '%s[%s' % (n*' ', so2str(n, so[0]))
-            for element in sos[1:]: s += ',\n%s' % so2str(n+2, element)
-        return(s + ']')
-    else:
-        raise TypeError('so2str type error')
-
-def ph2str(i,so):
-  """ convert phTree to pretty string with indent i """
-  if isinstance(so,tuple) and len(so) == 2 and \
-     isinstance(so[0],tuple) and ( len(so[0]) == 0 or isinstance(so[0][0],str) ): # lex
-    return '(%s,%s)' % (" ".join(so[0]), label2str(so[1]))
-  else:
-    s = '[ '
-    for j,x in enumerate(so):
-      s += ph2str(i+2, x)
-      if j < len(so)-1:
-        s += "\n" + (i * ' ')
-    s += ' ]'
-    return s
-
-def ph2nltk(ph):
-  """ convert phTree to nltk Tree format -- Tree must be imported from nltk.tree """
-  if isinstance(ph,tuple) and len(ph) == 2 and \
-     isinstance(ph[0],tuple) and ( len(ph[0]) == 0 or isinstance(ph[0][0],str) ): # lex
-    leaf = '(%s,%s)' % (" ".join(ph[0]), label2str(ph[1]))
-    return Tree(leaf,[])
-  else:
-    return Tree('*', list(map(ph2nltk, ph)))
-
-def ppLSO(lso):
-    """ pretty print labeled SO """
-    print(lso2str(0,lso))
-
-def lso2str(n, lso):
-    (so,label) = lso
-    return '( ' + so2str(0, so) + (', %s )' % label2str(label))
-
-def ppWS(ws):
-    """ pretty print workspace, i.e. set of LSOs """
-    print(ws2str(0,ws))
-
-def ws2str(n, ws):
-    if not(isinstance(ws,frozendict.frozendict)):
-        raise TypeError('ws2str type error')
-    else: # set
-        lsos = fmultiset.toList(ws)
-        if isinstance(lsos[0], list):
-            s = '%s{\n%s' % ((n*' '),lso2str(n, lsos[0]))
-            for element in lsos[1:]: s += ',\n%s' % lso2str(n+2, element)
-        else:
-            s = '%s{\n%s' % (n*' ', lso2str(n, lsos[0]))
-            for element in lsos[1:]: s += ',\n%s' % lso2str(n+2, element)
-        return(s + '\n}')
-
-# create lexical LSO
-def lexLSO(x):
-    return (x, x[1])
-
-# create lexical WS
-def lexWS(x):
-    return fmultiset.fromList([lexLSO(x)])
+def ppMg(g):         # pretty print grammar
+  for i in g: print(i.str())
 
 # example grammar from section 1.1.2
 g112 = [
-    ((), (('V',),('C',))),
-    ((), (('V','Wh'),('C',))),
-    (('Jo',), ((),('D',))),
-    (('the',), (('N',),('D',))),
-    (('which',), (('N',),('D','Wh'))),
-    (('who',), ((),('D','Wh'))),
-    (('cat',), ((),('N',))),
-    (('dog',), ((),('N',))),
-    (('food',), ((),('N',))),
-    (('likes',),(('D','D'),('V',))),
-    (('knows',), (('C','D'),('V',)))
+  LI((), (('V',),('C',))),               #0
+  LI((), (('V','Wh'),('C',))),           #1
+  LI(('Jo',), ((),('D',))),              #2
+  LI(('the',), (('N',),('D',))),         #3
+  LI(('which',), (('N',),('D','Wh'))),   #4
+  LI(('who',), ((),('D','Wh'))),         #5
+  LI(('cat',), ((),('N',))),             #6
+  LI(('dog',), ((),('N',))),             #7
+  LI(('food',), ((),('N',))),            #8
+  LI(('likes',),(('D','D'),('V',))),     #9
+  LI(('knows',), (('C','D'),('V',)))    #10
+  ]
+
+def ex00(): ppMg(g112)
+
+def ex000(): return d([g112[3].to_ws(), g112[6].to_ws()]) # the cat
+def ex001(): ex000().pp()
+
+def ex002(): return d( [g112[4].to_ws(), g112[8].to_ws()] )  # which food
+def ex003(): ex002().pp()
+
+def ex004(): return d( [g112[9].to_ws(), ex002()] )  # likes which food
+def ex005(): ex004().pp()
+
+def ex006(): return d( [ex004(), ex000()] )  # the cat likes which food
+def ex007(): ex006().pp()
+
+def ex008(): return d( [ex006(), g112[1].to_ws()] )  # C[+wh] the cat likes which food
+def ex009(): ex008().pp()
+
+def ex0010(): return d( [ex008()] )  # which food C[+wh] the cat likes which food
+def ex0011(): ex0010().pp()
+
+def ex0012(): return d( [g112[10].to_ws(), ex0010()] )  # knows which food C[+wh] the cat likes which food
+def ex0013(): ex0012().pp()
+
+def ex0014(): return d( [ex0012(), g112[2].to_ws()] )  # Jo knows which food C[+wh] the cat likes which food
+def ex0015(): ex0014().pp()
+
+## This is the example in Figure 1, with wh movement
+def ex0016(): return d( [g112[0].to_ws(), ex0014()] )  # C Jo knows which food C[+wh] the cat likes which food
+def ex0017(): ex0016().pp()
+def ex0018(): ex0016()._sos[0].pp() # print head SO only
+def ex0019(): ell(ex0016()._sos[0]).pp()
+def ex0019a(): o_svo(ex0016()._sos[0]).pp()
+def ex0019b(): o_sov(ex0016()._sos[0]).pp()
+
+## the copy language over {a,b}
+gxx = [
+    LI(("a",), (("A","Lf"),("C","Lf"))),       # 0
+    LI(("b",), (("B","Lf"),("C","Lf"))),       # 1
+    LI(("a",), (("C","Rt"),("A","Rt"))),       # 2
+    LI(("b",), (("C","Rt"),("B","Rt"))),       # 3
+    LI(    (), ((),("C","Rt","Lf"))),          # 4
+    LI(    (), (("C","Rt","Lf"),("C",)))       # 5
     ]
 
-def ex00():
-    ppMg(g112)
+def ex01(): ppMg(gxx)
 
-def exA():
-    return fmultiset.fromList([
-        (('likes',),(('D','D'),('V',))),
-        (('who',), ((),('D','Wh'))) ])
+## deriving complete aa from gxx requires 7 merges, with remnant movement
+def ex0100(): return d([gxx[2].to_ws(), gxx[4].to_ws()])  # a
+def ex0101(): ex0100().pp()
+def ex0102(): return d([ex0100()])
+def ex0103(): ex0102().pp()
+def ex0104(): return d([gxx[0].to_ws(), ex0102()])   # a
+def ex0105(): ex0104().pp()
+def ex0106(): return d([ex0104()])
+def ex0107(): ex0106().pp()
+def ex0108(): return d([gxx[5].to_ws(), ex0106()])
+def ex0109(): ex0108().pp()
+def ex0110(): return d([ex0108()])
+def ex0111(): ex0110().pp()
+def ex0112(): return d([ex0110()])
+def ex0113(): ex0112().pp()
+# def ex0113a(): ppSO (o_svo((head.fst) ex0112))
 
-def exAa():
-  ppSO(exA())
+## deriving complete abab, we continue from ex0106
+def ex0114(): return d([gxx[3].to_ws(), ex0106()])   # b a a
+def ex0115(): ex0114().pp()
+def ex0116(): return d([ex0114()])
+def ex0117(): ex0116().pp()
+def ex0118(): return d([gxx[1].to_ws(), ex0116()])   # b b a a
+def ex0119(): ex0118().pp()
+def ex0120(): return d([ex0118()])
+def ex0121(): ex0120().pp()
+def ex0122(): return d([gxx[5].to_ws(), ex0120()])
+def ex0123(): ex0122().pp()
+def ex0124(): return d([ex0122()])
+def ex0125(): ex0124().pp()
+def ex0126(): return d([ex0124()])
+def ex0127(): ex0126().pp()
 
-def exAws():
-  return d([lexWS((('likes',),(('D','D'),('V',)))),
-            lexWS((('who',), ((),('D','Wh')))) ])
+## examples from \S1.3.3 of the paper: replicating Stabler (2001: \S2.1)
+g133 = [
+  LI((), (('T',),('C',))),
+  LI((), (('T','Wh'),('C',))),
+  LI(('-s',), (('Modal','K'),('T',))),
+  LI(('-s',), (('Have','K'),('T',))),
+  LI(('-s',), (('Be','K'),('T',))),
+  LI(('-s',), (('Vx','K'),('T',))),
 
-def exAb():
-  ppWS(exAws())
+  LI(('will',), (('Have',),('Modal',))),
+  LI(('will',), (('Be',),('Modal',))),
+  LI(('will',), (('Vx',),('Modal',))),
 
-def exAc():
-  ppWS(ell(exA()))
+  LI(('have',), (('Been',),('Have',))),
+  LI(('have',), (('Ven',),('Have',))),
 
-def exB():
-  return fmultiset.fromList([
-       (('Jo',), ((),('D',))),
-       exA() ])
+  LI(('be',), (('Ving',),('Be',))),
+  LI(('been',), (('Ving',),('Been',))),
 
-def exBa():
-  ppSO(exB())
+  LI((), (('V','D'),('Vx',))),
+  LI(('-en',), (('V','D'),('Ven',))),
+  LI(('-ing',), (('V','D'),('Ving',))),
 
-def exC():
-  return fmultiset.fromList([
-      ((), (('V','Wh'),('C',))),
-      exB() ])
+  LI(('eat',), (('D','K'),('V',))),
+  LI(('laugh',), ((),('V',))),
 
-def exCa():
-  ppSO(exC())
+  LI(('the',), (('N',),('D','K'))),
+  LI(('which',), (('N',),('D','K','Wh'))),
 
-def ex00a():
-  return fmultiset.fromList([
-            (('likes',),(('D','D'),('V',))),
-            (('who',), ((),('D','Wh'))) ])
+  LI(('king',), ((),('N',))),
+  LI(('pie',), ((),('N',)))
+  ]
 
-def ex00b():
-  ppWS(ell(ex01()))
+def ex02(): ppMg(g133)
 
-def ex01():
-  return fmultiset.fromList(
-    [ ((), (('V','Wh'),('C',))),
-      fmultiset.fromList(
-        [ (('Jo',), ((),('D',))),
-          fmultiset.fromList([
-            (('likes',),(('D','D'),('V',))),
-            (('who',), ((),('D','Wh'))) ]) ]) ])
+def ex0201():
+  return SO([
+    SO([
+      LI(("which",), (("N",), ("D","K","Wh"))),
+      LI(("pie",), ((), ("N",))) ]),
+    SO([
+      LI(("+",), (("T","Wh"),("C",))),
+      SO([
+        SO([
+          LI(("the",), (("N",), ("D","K"))),
+          LI(("king",), ((), ("N",))) ]),
+        SO([
+          LI(("+s",), (("Have","K"), ("T",))),
+          SO([
+            LI(("have",), (("Been",), ("Have",))),
+            SO([
+              LI(("been",), (("Ving",), ("Been",))),
+              SO([
+                SO([
+                  LI(("the",), (("N",), ("D","K"))),
+                  LI(("king",), ((), ("N",))) ]),
+                SO([
+                  LI(("+ing",), (("V","D"), ("Ving",))),
+                  SO([
+                    SO([
+                      LI(("which",), (("N",), ("D","K","Wh"))),
+                      LI(("pie",), ((), ("N",))) ]),
+                    SO([
+                      LI(("eat",), (("D","K"), ("V",))),
+                      SO([
+                        LI(("which",), (("N",),("D","K","Wh"))),
+                        LI(("pie",), ((), ("N",)))]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ])
 
-def ex01a():
-  ppSO(ex01())
+def ex0202(): ex0201().pp()
+def ex0203(): ell(ex0201()).pp()
+def ex0203a(): o_svo(ex0201()).pp() # head movement
+def ex0203b(): o_sov(ex0201()).pp() # head movement
+#ex0203()
+def ex0204(): return h(0,ex0201())[1]
+def ex0204a(): ex0204().pp() # head movement
+def ex0204b(): o_svo(ex0204()).pp() # head movement
+def ex0204c(): o_sov(ex0204()).pp() # head movement
+#ex0204b()
 
-def ex01b():
-  ppWS(ell(ex01()))
+## Example of Figure 2, demonstrating multiple occurrences
+def ex08(): return SO([
+    LI((), (("T",),("C",))),
+    SO([
+      LI(("the man",), ((),("D", "K", "Scr"))),
+      SO([
+        LI(("the man",), ((),("D", "K", "Scr"))),
+        SO([
+          LI((), (("V", "K", "Scr"),("T",))),
+          SO([
+            LI(("the man",), ((),("D", "K", "Scr"))),
+            SO([
+              LI(("carefully",), (("V","Scr"), ("V",))),
+              SO([
+                LI(("the man",), ((),("D", "K", "Scr"))),
+                SO([
+                  LI(("the man",), ((),("D", "K", "Scr"))),
+                  SO([
+                    LI((), (("Vx","K","D"), ("V",))),
+                    SO([
+                      LI(("praises",), (("D",), ("Vx",))),
+                      LI(("the man",), ((),("D", "K", "Scr"))) ]) ]) ]) ]) ]) ]) ]) ]) ]) ])
 
-def ex02():
-  return fmultiset.fromList([
-    (('which',), (('N',),('D','Wh'))),
-    (('food',), ((),('N',))) ])
+# ex08().pp()
+def ex08a(): ell(ex08()).pp()
+def ex08b(): o_svo(ex08()).pp()
+def ex08c(): o_sov(ex08()).pp()
 
-def ex02b():
-  ppWS(ell(ex02()))
+## this example is from Figure 3
+def ex09(): return SO([
+  LI(("",), (("T",), ("C",))),
+  SO([
+    LI(("I",), ((),("D", "K"))),
+    SO([
+      LI(("",), (("V","K"), ("T",))),
+      SO([
+        LI(("I",), ((),("D", "K"))),
+        SO([
+          LI(("wonder",), (("C","D"), ("V",))),
+          SO([
+            SO([
+              LI(("",), (("T","Wh"), ("C",))),
+              SO([
+                SO([
+                  LI(("+s",), (("V","K"), ("T",))),
+                  SO([
+                    LI(("be",), (("A",), ("V",))),
+                    SO([
+                    LI(("how",), (("A",), ("A","Wh"))),
+                      SO([
+                      LI(("likely",), (("T",),("A",))),
+                        SO([
+                          LI(("to",), (("V",), ("T",))),
+                          SO([
+                            LI(("win",), (("D",), ("V",))),
+                            LI(("John",), ((),("D", "K"))) ]) ]) ]) ]) ]) ]),
+                LI(("John",), ((),("D", "K"))) ]) ]),
+            SO([
+              LI(("how",), (("A",), ("A","Wh"))),
+              SO([
+                LI(("likely",), (("T",),("A",))),
+                SO([
+                  LI(("to",), (("V",), ("T",))),
+                  SO([
+                    LI(("win",), (("D",), ("V",))),
+                    LI(("John",), ((),("D", "K"))) ]) ]) ]) ]) ]) ]) ]) ]) ]) ])
 
-def ex03():
-  return fmultiset.fromList([
-    (('Jo',), ((),('D',))),
-      #fmultiset.fromList([
-      #  (('the',), (('N',),('D',))),
-      #  (('cat',), ((),('N',))) ]),
-    fmultiset.fromList([
-        (('likes',),(('D','D'),('V',))),
-        ex02() ]) ])
+#ex09().pp()
+def ex09a(): ell(ex09()).pp()
+def ex09b(): o_svo(ex09()).pp()
+def ex09c(): o_sov(ex09()).pp()
 
-def ex03b():
-  ppWS(ell(ex03()))
-
-def ex04():
-  return fmultiset.fromList([
-    ((), (('V','Wh'),('C',))),
-    fmultiset.fromList([
-      fmultiset.fromList([
-        (('the',), (('N',),('D',))),
-        (('cat',), ((),('N',))) ]),
-      fmultiset.fromList([
-        (('likes',),(('D','D'),('V',))),
-        ex02() ]) ]) ])
-
-def ex04b():
-  ws = ell(ex04())
-  ppWS(ws)
-  print('derived structure has size %d' % len(ws))
-
-def ex05():
-  return fmultiset.fromList([
-   fmultiset.fromList([
-    ((), (('V','Wh'),('C',))),
-    fmultiset.fromList([
-      fmultiset.fromList([
-        (('the',), (('N',),('D',))),
-        (('cat',), ((),('N',))) ]),
-      fmultiset.fromList([
-        (('likes',),(('D','D'),('V',))),
-        ex02() ]) ]) ]),
-    ex02()])
-
-def ex05b():
-  ws = ell(ex05())
-  ppWS(ws)
-  print('derived ws has %d lso(s)' % len(ws))
-
-def ex06():
-  return fmultiset.fromList([
-    (('knows',), (('C','D'),('V',))),
-    ex05() ])
-
-def ex06b():
-  ws = ell(ex06())
-  ppWS(ws)
-  print('derived ws has %d lso(s)' % len(ws))
-
-# This is the example in Figure 1
-def ex07():
-  return fmultiset.fromList([
-    ((), (('V',),('C',))),
-    fmultiset.fromList([
-      (('Jo',), ((),('D',))),
-      ex06() ]) ])
-
-def ex07a():
-  ppSO(ex07())
-
-def ex07b():
-  ws = ell(ex07())
-  ppWS(ws)
-  print('derived ws has %d lso(s)' % len(ws))
-
-def ex07c():
-  ppSO(ord_svo(ex07()))
-
-def ex07d():
-  ppSO(ord_sov(ex07()))
-
-# Example of Figure 2, demonstrating multiple occurrences
-def ex08():
-  return fmultiset.fromList([
-        ((), (('T',),('C',))),
-        fmultiset.fromList([
-          (('the man',), ((),('D', 'K', 'Scr'))),
-          fmultiset.fromList([
-            (('the man',), ((),('D', 'K', 'Scr'))),
-             fmultiset.fromList([
-               ((), (('v', 'K', 'Scr'),('T',))),
-               fmultiset.fromList([
-                 (('the man',), ((),('D', 'K', 'Scr'))),
-                 fmultiset.fromList([
-                   (('carefully',), (('v','Scr'), ('v',))),
-                   fmultiset.fromList([
-                     (('the man',), ((),('D', 'K', 'Scr'))),
-                     fmultiset.fromList([
-                       (('the man',), ((),('D', 'K', 'Scr'))),
-                       fmultiset.fromList([
-                         ((), (('V','K','D'), ('v',))),
-                         fmultiset.fromList([
-                           (('praises',), (('D',), ('V',))),
-                           (('the man',), ((),('D', 'K', 'Scr'))) ]) ]) ]) ]) ]) ]) ]) ]) ]) ])
-
-def ex08a():
-  ppSO(ex08())
-
-def ex08b():
-  ws = ell(ex08())
-  ppWS(ws)
-  print('derived ws has %d lso(s)' % len(ws))
-
-def ex08c():
-  ppSO(ord_svo(ex08()))
-
-def ex08d():
-  ppSO(ord_sov(ex08()))
-
-# example grammar from section 1.1.2
+## this example is from Figure 4
 g121 = [
-    ((), (("T",), ("C,"))),
-    ((), (("V",), ("T",))),
-    ((), (("Pred", "D"), ("Predx",))),
-    (("is",), (("A",), ("V",))),
-    (("cuma",), (("Predx",), ("A",))),
-    (("e",), ((), ("D",))),
-    (("na",), (("D",), ("Pred",))),
-    (("shamhradh",), ((), ("D",))),
-    (("fhomhar",), ((), ("D",))),
-    (("gheimhread",), ((), ("D",))),
-    (("no",), (("Pred", "Pred+"), ("Pred",)))
+    LI((), (("T",), ("C",))),
+    LI((), (("V",), ("T",))),
+    LI((), (("Pred", "D"), ("Predx",))),
+    LI(("is",), (("A",), ("V",))),
+    LI(("cuma",), (("Predx",), ("A",))),
+    LI(("e",), ((), ("D",))),
+    LI(("na",), (("D",), ("Pred",))),
+    LI(("shamhradh",), ((), ("D",))),
+    LI(("fhomhar",), ((), ("D",))),
+    LI(("gheimhread",), ((), ("D",))),
+    LI(("no",), (("Pred", "Pred+"), ("Pred",)))
     ]
 
-def ex09():
-    ppMg(g121)
+def ex20(): return SO([
+  LI(("na",), (("D",), ("Pred",))),
+  LI(("gheimhread",), ((), ("D",))) ])
 
-def ex20():
-  return fmultiset.fromList([
-    (("na",), (("D",), ("Pred",))),
-    (("gheimhread",), ((), ("D",))) ])
-
-def ex21():
-  return fmultiset.fromList([
-    (("no",), (("Pred", "Pred+"), ("Pred",))),
+def ex21(): return SO([
+    LI(("no",), (("Pred", "Pred+"), ("Pred",))),
     ex20() ])
 
-def ex22():
-  return fmultiset.fromList([
-    fmultiset.fromList([
-      (("na",), (("D",), ("Pred",))),
-      (("shamhradh",), ((), ("D",))) ]),
-    fmultiset.fromList([
-      (("na",), (("D",), ("Pred",))),
-      (("fhomhar",), ((), ("D",))) ]),
+def ex21a(): ell(ex21()).pp()
+#ex21a()
+
+def ex22(): return SO([
+    SO([
+      LI(("na",), (("D",), ("Pred",))),
+      LI(("shamhradh",), ((), ("D",))) ]),
+    SO([
+      LI(("na",), (("D",), ("Pred",))),
+      LI(("fhomhar",), ((), ("D",))) ]),
     ex21() ])
 
-def ex22so():
-  ppSO(ex22())
+#ex22().pp()
+def ex22a(): ell(ex22()).pp()
+def ex22b(): o_svo(ex22()).pp()
+def ex22c(): o_sov(ex22()).pp()
 
-def ex22a():
-  ppWS(ell(ex22()))
-
-def ex22b():
-  ppSO(ord_svo(ex22()))
-
-def ex22c():
-  ppSO(ord_sov(ex22()))
-
-# This is example (10) of Figure 3 but with identical coordinates
-def ex23():
-  return fmultiset.fromList([
-    fmultiset.fromList([
-      (("na",), (("D",), ("Pred",))),
-      (("gheimhread",), ((), ("D",))) ]),
-    fmultiset.fromList([
-      (("na",), (("D",), ("Pred",))),
-      (("gheimhread",), ((), ("D",))) ]),
+## This is example (10) of Figure 4 but with identical coordinates
+def ex23(): return SO([
+    SO([
+      LI(("na",), (("D",), ("Pred",))),
+      LI(("gheimhread",), ((), ("D",))) ]),
+    SO([
+      LI(("na",), (("D",), ("Pred",))),
+      LI(("gheimhread",), ((), ("D",))) ]),
     ex21() ])
 
-def ex23so():
-  ppSO(ex23())
+#ex23().pp()
+def ex23a(): ell(ex23()).pp()
+#ex23a()
+def ex23b(): o_svo(ex23()).pp()
+def ex23c(): o_sov(ex23()).pp()
 
-def ex23a():
-  ppWS(ell(ex23()))
+## this example is from Figure 5
+def ex24(): return SO([
+    LI((), (("V",),("C",))),
+    SO([
+      LI(("Jo",), ((),("D",))),
+      SO([
+        LI(("likes",), (("D", "D"), ("V",))),
+        SO([
+          LI(("blueberries",), ((), ("D",))),
+          LI(("bayberries",), ((), ("D",))),
+          LI(("raspberries",), ((), ("D",))),
+          LI(("mulberries",), ((), ("D",))),
+          SO([
+            LI(("and",), (("D","D+"),("D",))),
+            LI(("brambleberries",), ((), ("D",))) ]) ]) ]) ]) ])
 
-def ex23b():
-  ppSO(ord_svo(ex23()))
+#ex24().pp()
+def ex24a(): ell(ex24()).pp()
+#ex24a()
+def ex24b(): o_svo(ex24()).pp()
+def ex24c(): o_sov(ex24()).pp()
+#ex24c()
 
-def ex23c():
-  ppSO(ord_sov(ex23()))
-
-# this example is from Figure 4
-def ex24():
-  return fmultiset.fromList([
-    ((), (("V",),("C",))),
-      fmultiset.fromList([
-        (("Jo",), ((),("D",))),
-        fmultiset.fromList([
-          (("likes",), (("D", "D"), ("V",))),
-          fmultiset.fromList([
-            (("blueberries",), ((), ("D",))),
-            (("bayberries",), ((), ("D",))),
-            (("raspberries",), ((), ("D",))),
-            (("mulberries",), ((), ("D",))),
-            fmultiset.fromList([
-              (("and",), (("D","D+"),("D",))),
-              (("brambleberries",), ((), ("D",))) ]) ]) ]) ]) ])
-
-def ex24so():
-  ppSO(ex24())
-
-def ex24a():
-  ppWS(ell(ex24()))
-
-def ex24b():
-  ppSO(ord_svo(ex24()))
-
-def ex24c():
-  ppSO(ord_sov(ex24()))
-
-# this example is (an English approximation to) Figure 5, left
+## atb wh movement -- an English approximation to Figure 6, left
 def ex25():
-  return fmultiset.fromList([
-    (("who",), ((), ("D","Wh"))),
-    fmultiset.fromList([
-           ((), (("V","Wh"),("C",))),
-           fmultiset.fromList([
-             fmultiset.fromList([
-               (("Maria",), ((), ("D",))),
-               fmultiset.fromList([
-                 (("likes",), (("D","D"),("V",))),
-                 (("who",), ((), ("D","Wh"))) ]) ]),
-             fmultiset.fromList([
-               (("and",), (("V","V+"),("V",))),
-               fmultiset.fromList([
-                 (("Ewa",), ((), ("D",))),
-                 fmultiset.fromList([
-                   (("hates",), (("D","D+"),("V",))),
-                   (("who",), ((), ("D","Wh"))) ]) ]) ]) ]) ]) ])
+  return SO([
+    LI(("who",), ((), ("D","Wh"))),
+    SO([
+      LI((), (("V","Wh"),("C",))),
+      SO([
+        SO([
+          LI(("Maria",), ((), ("D",))),
+          SO([
+            LI(("likes",), (("D","D+"),("V",))),
+            LI(("who",), ((), ("D","Wh"))) ]) ]),
+        SO([
+          LI(("and",), (("V","V+"),("V",))),
+          SO([
+            LI(("Ewa",), ((), ("D",))),
+            SO([
+              LI(("hates",), (("D","D+"),("V",))),
+              LI(("who",), ((), ("D","Wh"))) ]) ]) ]) ]) ]) ])
 
-def ex25so():
-  ppSO(ex25())
+#ex25().pp()
+def ex25a(): ell(ex25()).pp()
+#ex25a()
+def ex25b(): o_svo(ex25()).pp()
+def ex25c(): o_sov(ex25()).pp()
 
-def ex25a():
-  ppWS(ell(ex25()))
+## atb wh movement -- any number of coordinates OK, extending the previous example
+def ex26(): return SO([
+    LI(("who",), ((), ("D","Wh"))),
+    SO([
+      LI((), (("V","Wh"),("C",))),
+      SO([
+        SO([
+          LI(("Maria",), ((), ("D",))),
+          SO([
+            LI(("likes",), (("D","D+"),("V",))),
+            LI(("who",), ((), ("D","Wh"))) ]) ]),
+        SO([
+          LI(("Max",), ((), ("D",))),
+          SO([
+            LI(("tolerates",), (("D","D+"),("V",))),
+            LI(("who",), ((), ("D","Wh"))) ]) ]),
+        SO([
+          LI(("Zuzanna",), ((), ("D",))),
+          SO([
+            LI(("pities",), (("D","D+"),("V",))),
+            LI(("who",), ((), ("D","Wh"))) ]) ]),
+        SO([
+          LI(("and",), (("V","V+"),("V",))),
+          SO([
+            LI(("Ewa",), ((), ("D",))),
+            SO([
+              LI(("hates",), (("D","D+"),("V",))),
+              LI(("who",), ((), ("D","Wh"))) ]) ]) ]) ]) ]) ])
 
-def ex25b():
-  ppSO(ord_svo(ex25()))
+#ex26().pp()
+def ex26a(): ell(ex26()).pp()
+#ex26a()
+def ex26b(): o_svo(ex26()).pp()
+def ex26c(): o_sov(ex26()).pp()
 
-def ex25c():
-  ppSO(ord_sov(ex25()))
+# Javanese-like multiple head movement
+def ex1201():
+  return SO([
+    LI(("++",), (("Vgelem",),("C",))),
+    SO([
+      LI(("Tono",), ((),("D",))),
+      SO([
+        LI(("want",), (("Visa","D"), ("Vgelem",))),
+        SO([
+          LI(("can",), (("V",),("Visa",))),
+          SO([
+            LI(("speak",), (("D",),("V",))),
+            LI(("English",), ((),("D",))) ]) ]) ]) ]) ])
 
-# we can have ATB with any number of coordinates, extending the previous example
-def ex26():
-  return fmultiset.fromList([
-         (("who",), ((), ("D","Wh"))),
-         fmultiset.fromList([
-           ((), (("V","Wh"),("C",))),
-           fmultiset.fromList([
-             fmultiset.fromList([
-               (("Maria",), ((), ("D",))),
-               fmultiset.fromList([
-                 (("likes",), (("D","D+"),("V",))),
-                 (("who",), ((), ("D","Wh"))) ]) ]),
-             fmultiset.fromList([
-               (("Max",), ((), ("D",))),
-               fmultiset.fromList([
-                 (("tolerates",), (("D","D+"),("V",))),
-                 (("who",), ((), ("D","Wh"))) ]) ]),
-             fmultiset.fromList([
-               (("Zuzanna",), ((), ("D",))),
-               fmultiset.fromList([
-                 (("pities",), (("D","D+"),("V",))),
-                 (("who",), ((), ("D","Wh"))) ]) ]),
-             fmultiset.fromList([
-               (("and",), (("V","V+"),("V",))),
-               fmultiset.fromList([
-                 (("Ewa",), ((), ("D",))),
-                 fmultiset.fromList([
-                   (("hates",), (("D","D+"),("V",))),
-                   (("who",), ((), ("D","Wh"))) ]) ]) ]) ]) ]) ])
-
-def ex26so():
-  ppSO(ex26())
-
-def ex26a():
-  ppWS(ell(ex26()))
-
-def ex26b():
-  ppSO(ord_svo(ex26()))
-
-def ex26bntlk():
-  ph2nltk(ord_svo(ex26())).draw()
-
-def ex26c():
-  ppSO(ord_sov(ex26()))
-
-# example from \S1.3.3 of the paper: replicating Stabler (2001: \S2.1)
-#   but without representing the strings of expressions as triples,
-#   and with a deterministic free-affix transduction instead of many new derivational rules
-def g133(): return [
-    ((), (("T",),("C",))),
-    ((), (("T","Wh"),("C",))),
-
-    (("-s",), (("Modal","K"),("T",))),
-    (("-s",), (("Have","K"),("T",))),
-    (("-s",), (("Be","K"),("T",))),
-    (("-s",), (("Vx","K"),("T",))),
-
-    (("will",), (("Have",),("Modal",))),
-    (("will",), (("Be",),("Modal",))),
-    (("will",), (("Vx",),("Modal",))),
-
-    (("have",), (("Been",),("Have",))),
-    (("have",), (("Ven",),("Have",))),
-
-    (("be",), (("Ving",),("Be",))),
-    (("been",), (("Ving",),("Been",))),
-
-    ((), (("V","D"),("Vx",))),
-    (("-en",), (("V","D"),("Ven",))),
-    (("-ing",), (("V","D"),("Ving",))),
-
-    (("eat",), (("D","K"),("V",))),
-    (("laugh",), ((),("V",))),
-
-    (("the",), (("N",),("D","K"))),
-    (("which",), (("N",),("D","K","Wh"))),
-
-    (("king",), ((),("N",))),
-    (("pie",), ((),("N",)))
-    ]
-
-def ex27a():
-  ppMg(g133())
-
-def ex27f():
-  return fmultiset.fromList([
-          fmultiset.fromList([
-            (("which",), (("N",),("D","K","Wh"))),
-            (("pie",), ((), ("N",))) ]),
-          fmultiset.fromList([
-            ((), (("T","Wh"),("C",))),
-            fmultiset.fromList([
-              fmultiset.fromList([
-                (("the",), (("N",),("D","K"))),
-                (("king",), ((), ("N",))) ]),
-              fmultiset.fromList([
-                (("-s",), (("Have","K"),("T",))),
-                fmultiset.fromList([
-                  (("have",), (("Been",),("Have",))),
-                  fmultiset.fromList([
-                    (("been",), (("Ving",),("Been",))),
-                    fmultiset.fromList([
-                      fmultiset.fromList([
-                        (("the",), (("N",),("D","K"))),
-                        (("king",), ((), ("N",))) ]),
-                      fmultiset.fromList([
-                        (("-ing",), (("V","D"),("Ving",))),
-                        fmultiset.fromList([
-                          fmultiset.fromList([
-                             (("which",), (("N",),("D","K","Wh"))),
-                             (("pie",), ((), ("N",))) ]),
-                          fmultiset.fromList([
-                            (("eat",), (("D","K"),("V",))),
-                            fmultiset.fromList([
-                               (("which",), (("N",),("D","K","Wh"))),
-                               (("pie",), ((), ("N",))) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ])
-
-def ex27g():
-  ppWS(ell(ex27f()))
-
-def ex27h():
-  ppSO(ord_svo(ex27f()))
-
-def ex27i():
-  ppSO(ord_sov(ex27f()))
-
-def ex27hntlk():
-  ph2nltk(ord_svo(ex27f())).draw()
-
-#ex08d()
-#ex25b()
-#ex27hntlk()
-ex27h()
+def ex1202(): ex1201().pp() # SO
+def ex1203(): ell(ex1201()).pp() # WS
+def ex1204(): h(0,ex1201())[1].pp() # SO with head movement
+def ex1204a(): o_svo(h(0,ex1201())[1]).pp()
+def ex1204b(): o_sov(h(0,ex1201())[1]).pp()
+ex1204a()
+#ex0204b()

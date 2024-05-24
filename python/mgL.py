@@ -1,30 +1,22 @@
-""" mgL.py (not annotated for mypy, since mypy does not know frozendict) """
-import frozendict
-from mg import *
-
-def negWS(ws:list) -> bool:
-  return [lso for lso in fmultiset.toList(ws) if lso[1][0] != ()] != []
+""" https://github.com/epstabler/mgt/tree/main/python/mgL.py """
+from mg import *  # this imports frozendict, mgTypes, mg
 
 def ell(so):
-  """ map so to its derived workspace """
-  if isinstance(so,tuple) and len(so) == 2 and \
-     isinstance(so[0],tuple) and ( len(so[0]) == 0 or isinstance(so[0][0],str) ):
-    return fmultiset.fromList([(so,so[1])])
-  elif isinstance(so,frozendict.frozendict):
-    ([nws],pwss) = partition(negWS, [ell(s) for s in fmultiset.toList(so)])
-    pws = pwss[0]
-    (nlsos,others) = partition( lambda lso: lso[1][0] != (), fmultiset.toList(nws) )
-    if len(nlsos) != 1:
-      raise RuntimeError("ell: zero or >1 neg LSOs in workspaces")
-    (nso,(nfs,pfs)) = nlsos[0]
-    imatches = [lso for lso in others if lso[1][1][0] == nfs[0]]
-    if len(imatches)==1:
-      (pso,plabel) = imatches[0]
-      if maxx(fmultiset.toList(pws))[0] != pso or pwss[1:] != []:
-        raise RuntimeError("move-over-merge error")
-      else: # im
-        return d([nws])
-    else:  # em
-      return d([nws] + pwss)
+  """ Map so to its derived workspace, if any.
+   NB: For derived SOs, ell is recursively mapped to children, going right down to the leaves.
+   Then, from the leaves, d is applied to build workspaces bottom-up.
+   So this is a multi bottom-up transduction on unordered trees (i.e. on multisets).
+  """
+  if isinstance(so,LI) or isinstance(so,O): return so.to_ws()
   else:
-    raise TypeError("ell type error")
+    (negwss, poswss) = partition (lambda x: x.is_neg(), map(ell,so.to_tuple())) ## partition neg WSs (def in mgTypes.py)
+    sos0, label0, labels0 = negwss[0]._sos[1:], negwss[0]._labels[0], negwss[0]._labels[1:]
+    (f, plus) = fplus(label0._neg[0])
+    (IMmatches, IMothers) = WS(sos0,labels0).ppartition(lambda x: x[1]._pos[0] == f) # partition matches
+    if IMmatches._sos:
+      if len(poswss) != 1 or \
+         str(IMmatches._sos[0]) != str(poswss[0]._sos[0]): # str to avoid comparison issues
+        raise RuntimeError("ell: move-over-merge error")
+      return d( negwss )
+    else:
+      return d( negwss +  poswss )

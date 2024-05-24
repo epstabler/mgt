@@ -35,7 +35,7 @@ using external packages in {\tt ghci}, etc.
 
 \paragraph{Optional: Literate Haskell}
 To process literate Haskell files (*.lhs), install {\tt lhs2tex} and {\tt unlit},
-used to produce this documentation:
+used to produce this documentation:\footnote{``A literate programmer is an essayist who writes programs for humans to understand, instead of primarily writing instructions for machines to follow. When programs are written in the recommended style they can be transformed into documents by a document compiler and into efficient code by an algebraic compiler.'' -- Donald Knuth}
 \begin{verbatim}
 % stack install unlit
 % stack install lhs2tex

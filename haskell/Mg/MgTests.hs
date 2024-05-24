@@ -1,15 +1,18 @@
+-- https://github.com/epstabler/mgt/tree/main/haskell/Mg/MgTests.hs
 module MgTests where           -- Multiset needed. E.g., start ghci with: stack ghci --package multiset
 import Data.MultiSet (MultiSet)
 import qualified Data.MultiSet as MultiSet
-import Data.List
-import qualified Data.List as List
-
+import Data.List (partition)
 import Mg
 import MgL
-import MgO
 import MgH
+import MgO
 
-{--- IO: prettyPrint various structures ---}
+-- create lexical workspace
+lexWS :: Lex -> WS
+lexWS lex = ([L lex], [snd lex])
+
+-- print n spaces
 tab 0 = putStr ""
 tab n = do { putStr " "; tab (n-1) }
 
@@ -61,29 +64,9 @@ ppSOs i [] = putStr ""
 ppSOs i (x:[]) = do { ppSO' i x }
 ppSOs i (x:xs) = do { ppSO' i x ; putStrLn "," ; tab i ; ppSOs i xs }
 
--- pretty print LSO
-ppLSO lso = do { ppLSO' 0 lso ; putStrLn "" }
-
--- pretty print LSO with indent i
-ppLSO' i ((L w), label) = do { putStr (so2str (L w)); putStr ", "; putStr (label2str label) }
-ppLSO' i ((S so),label) = do { putStr "{ " ; ppSOs (i+2) (MultiSet.elems so) ; putStr " },"; putStr (label2str label) }
-ppLSO' i ((O t),label) = do { ppPh t; putStr (label2str label) }
-
--- pretty print a list of SOs with indent i
-ppLSOs i [] = putStr ""
-ppLSOs i (x:[]) = do { ppLSO' i x }
-ppLSOs i (x:xs) = do { ppLSO' i x ; putStrLn "," ; tab i ; ppLSOs i xs }
-
--- pretty print a workspace with indent i
-ppWS ws = do {ppLSOs 0 (MultiSet.toList ws); putStrLn "" }
-
--- create lexical LSO from SO
-lexLSO :: SO -> LSO
-lexLSO (L x) = (L x, snd x)
-
--- create lexical WS from SO
-lexWS :: SO -> WS
-lexWS x = MultiSet.singleton (lexLSO x)
+-- pretty print a workspace
+ppWS ([],[]) = putStrLn ""
+ppWS (so:sos, label:labels) = do { ppSO so ; putStrLn (label2str label); ppWS (sos,labels) }
 
 -- example grammar from section 1.1.2
 g112 :: [Lex]
@@ -105,71 +88,162 @@ g112 = [
 
 ex00 = ppMg g112
 
-exA = S (MultiSet.fromList [
-            L (["likes"],([One D,One D],[One V])),
-            L (["who"], ([],[One D,One Wh])) ])
+ex000 = d [lexWS (g112!!3), lexWS (g112!!6)]  -- the cat
+ex001 = ppWS ex000
 
-exB = S (MultiSet.fromList [
-            L (["Jo"], ([],[One D])),
-            exA ])
+ex002 = d [lexWS (g112!!4), lexWS (g112!!8)]  -- which food
+ex003 = ppWS ex002
 
-exC = S (MultiSet.fromList [
-            L ([], ([One V,One Wh],[One C])),
-            exB ])
+ex004 = d [lexWS (g112!!9), ex002] -- likes which food
+ex005 = ppWS ex004
 
-ex01 :: SO
-ex01 = S (MultiSet.fromList
-         [ L ([], ([One V,One Wh],[One C])),
-           S (MultiSet.fromList
-              [ L (["Jo"], ([],[One D])),
+ex006 = d [ex004, ex000]  -- the cat likes which food
+ex007 = ppWS ex006
+
+ex008 = d [ex006, lexWS (g112!!1)]  -- C[+wh] the cat likes which food
+ex009 = ppWS ex008
+
+ex0010 = d [ex008]  -- which food C[+wh] the cat likes which food
+ex0011 = ppWS ex0010
+
+ex0012 = d [lexWS (g112!!10), ex0010]  -- knows which food C[+wh] the cat likes which food
+ex0013 = ppWS ex0012
+
+ex0014 = d [ex0012, lexWS (g112!!2)]  -- Jo knows which food C[+wh] the cat likes which food
+ex0015 = ppWS ex0014
+
+-- This is the example in Figure 1, with wh movement
+ex0016 = d [lexWS (g112!!0), ex0014]  -- C Jo knows which food C[+wh] the cat likes which food
+ex0017 = ppWS ex0016
+ex0018 = ppSO ((head.fst) ex0016)
+ex0019 = ppWS (ell ((head.fst) ex0016))
+ex0019a = ppSO (o_svo ((head.fst) ex0016))
+ex0019b = ppSO (o_sov ((head.fst) ex0016))
+
+gxx :: [Lex]
+gxx = [
+    (["a"], ([One A,One Lf],[One C,One Lf])),       -- 0
+    (["b"], ([One B,One Lf],[One C,One Lf])),       -- 1
+    (["a"], ([One C,One Rt],[One A,One Rt])),       -- 2
+    (["b"], ([One C,One Rt],[One B,One Rt])),       -- 3
+    (   [], ([],[One C,One Rt,One Lf])),            -- 4
+    (   [], ([One C,One Rt,One Lf],[One C]))        -- 5
+    ]
+
+ex01 = ppMg gxx
+
+-- deriving complete aa from gxx requires 7 merges, with remnant movement
+ex0100 = d [lexWS (gxx!!2), lexWS (gxx!!4)]  -- a
+ex0101 = ppWS ex0100
+ex0102 = d [ex0100]
+ex0103 = ppWS ex0102
+ex0104 = d [lexWS (gxx!!0), ex0102]   -- a
+ex0105 = ppWS ex0104
+ex0106 = d [ex0104]
+ex0107 = ppWS ex0106 -- 
+ex0108 = d [lexWS (gxx!!5), ex0106]
+ex0109 = ppWS ex0108
+ex0110 = d [ex0108]
+ex0111 = ppWS ex0110
+ex0112 = d [ex0110]
+ex0113 = ppWS ex0112
+ex0113a = ppSO (o_svo ((head.fst) ex0112))
+
+-- deriving complete abab, we continue from ex0106
+ex0114 = d [lexWS (gxx!!3), ex0106]   -- b a a
+ex0115 = ppWS ex0114
+ex0116 = d [ex0114]
+ex0117 = ppWS ex0116
+ex0118 = d [lexWS (gxx!!1), ex0116]   -- b b a a
+ex0119 = ppWS ex0118
+ex0120 = d [ex0118]
+ex0121 = ppWS ex0120 -- 
+ex0122 = d [lexWS (gxx!!5), ex0120]
+ex0123 = ppWS ex0122
+ex0124 = d [ex0122]
+ex0125 = ppWS ex0124
+ex0126 = d [ex0124]
+ex0127 = ppWS ex0126
+
+ex0128 = ppSO ((head.fst) ex0126)
+ex0129 = ppWS (ell ((head.fst) ex0126))
+ex0129a = ppSO (o_svo ((head.fst) ex0126))
+
+-- examples from \S1.3.3 of the paper: replicating Stabler (2001: \S2.1)
+g133 :: [Lex]
+g133 = [
+    ([], ([One T],[One C])),
+    ([], ([One T,One Wh],[One C])),
+
+    (["-s"], ([One Modal,One K],[One T])),
+    (["-s"], ([One Have,One K],[One T])),
+    (["-s"], ([One Be,One K],[One T])),
+    (["-s"], ([One Vx,One K],[One T])),
+
+    (["will"], ([One Have],[One Modal])),
+    (["will"], ([One Be],[One Modal])),
+    (["will"], ([One Vx],[One Modal])),
+
+    (["have"], ([One Been],[One Have])),
+    (["have"], ([One Ven],[One Have])),
+
+    (["be"], ([One Ving],[One Be])),
+    (["been"], ([One Ving],[One Been])),
+
+    ([], ([One V,One D],[One Vx])),
+    (["-en"], ([One V,One D],[One Ven])),
+    (["-ing"], ([One V,One D],[One Ving])),
+
+    (["eat"], ([One D,One K],[One V])),
+    (["laugh"], ([],[One V])),
+
+    (["the"], ([One N],[One D,One K])),
+    (["which"], ([One N],[One D,One K,One Wh])),
+
+    (["king"], ([],[One N])),
+    (["pie"], ([],[One N]))
+    ]
+
+ex02 = ppMg g133
+
+ex0201 :: SO
+ex0201 = S (MultiSet.fromList [
+          S (MultiSet.fromList [
+            L (["which"], ([One N],[One D,One K,One Wh])),
+            L (["pie"], ([], [One N])) ]),
+          S (MultiSet.fromList [
+            L (["+"], ([One T,One Wh],[One C])),
+            S (MultiSet.fromList [
+              S (MultiSet.fromList [
+                L (["the"], ([One N],[One D,One K])),
+                L (["king"], ([], [One N])) ]),
+              S (MultiSet.fromList [
+                L (["+s"], ([One Have,One K],[One T])),
                 S (MultiSet.fromList [
-                      L (["likes"],([One D,One D],[One V])),
-                      L (["who"], ([],[One D,One Wh])) ])
-              ])
-         ])
-ex01a = ppWS (ell ex01)
+                  L (["have"], ([One Been],[One Have])),
+                  S (MultiSet.fromList [
+                    L (["been"], ([One Ving],[One Been])),
+                    S (MultiSet.fromList [
+                      S (MultiSet.fromList [
+                        L (["the"], ([One N],[One D,One K])),
+                        L (["king"], ([], [One N])) ]),
+                      S (MultiSet.fromList [
+                        L (["+ing"], ([One V,One D],[One Ving])),
+                        S (MultiSet.fromList [
+                          S (MultiSet.fromList [
+                             L (["which"], ([One N],[One D,One K,One Wh])),
+                             L (["pie"], ([], [One N])) ]),
+                          S (MultiSet.fromList [
+                            L (["eat"], ([One D,One K],[One V])),
+                            S (MultiSet.fromList [
+                               L (["which"], ([One N],[One D,One K,One Wh])),
+                               L (["pie"], ([], [One N])) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ])
 
-ex02 :: SO
-ex02 = S (MultiSet.fromList [
-         L (["which"], ([One N],[One D,One Wh])),
-         L (["food"], ([],[One N])) ])
-
-ex03 :: SO
-ex03 = S (MultiSet.fromList [
-         L ([], ([One V,One Wh],[One C])),
-         S (MultiSet.fromList [
-           S (MultiSet.fromList [
-             L (["the"], ([One N],[One D])),
-             L (["cat"], ([],[One N])) ]),
-           S (MultiSet.fromList [
-             L (["likes"],([One D,One D],[One V])),
-             ex02 ]) ]) ])
-
-ex04 :: SO
-ex04 = S (MultiSet.fromList [
-             ex02,
-             ex03 ])
-
-ex05 :: SO
-ex05 = S (MultiSet.fromList [
-             L (["knows"], ([One C,One D],[One V])),
-             ex04 ])
-
-ex06 :: SO
-ex06 = S (MultiSet.fromList [
-             L (["Jo"], ([],[One D])),
-             ex05 ])
-
--- This is the example in Figure 1
-ex07 ::SO
-ex07 = S (MultiSet.fromList [
-             L ([], ([One V],[One C])),
-             ex06 ])
-
-ex07a = ppSO ex07
-ex07b = ppWS (ell ex07)
-ex07c = ppSO (o_svo ex07)
-ex07d = ppSO (o_sov ex07)
+ex0202 = ppSO ex0201
+ex0203 = ppWS (ell ex0201)
+ex0204 = ppSO (snd (h 0 ex0201)) -- head movement
+ex0204a = ppSO (o_svo (snd (h 0 ex0201))) -- head movement
+ex0204b = ppSO (o_sov (snd (h 0 ex0201))) -- head movement
 
 -- Example of Figure 2, demonstrating multiple occurrences
 ex08 :: SO
@@ -317,10 +391,10 @@ ex24 = S (MultiSet.fromList
                   L (["brambleberries"], ([], [One D])) ]) ]) ]) ]) ])
 
 ex24a = ppWS (ell ex24)
-ex24b = ppSO (o_svo ex24)
-ex24c = ppSO (o_sov ex24)
+--ex24b = ppSO (o_svo ex24)
+--ex24c = ppSO (o_sov ex24)
 
--- this example is (an English approximation to) Figure 6, left
+-- this example is (an English approximation to) Figure 6, left -- atb wh movement
 ex25 :: SO
 ex25 = S (MultiSet.fromList [
          L (["who"], ([], [One D,One Wh])),
@@ -378,82 +452,22 @@ ex26a = ppWS (ell ex26)
 ex26b = ppSO (o_svo ex26)
 ex26c = ppSO (o_sov ex26)
 
--- example from \S1.3.3 of the paper: replicating Stabler (2001: \S2.1)
---   but without representing the strings of expressions as triples,
---   and with a deterministic free-affix transduction instead of many new derivational rules
-g133 :: [Lex]
-g133 = [
-    ([], ([One T],[One C])),
-    ([], ([One T,One Wh],[One C])),
+-- Javanese-like multiple head movement
+ex1201 :: SO
+ex1201 = S (MultiSet.fromList [
+           L (["++"], ([One Vgelem],[One C])),
+           S (MultiSet.fromList [
+             L (["Tono"], ([],[One D])),
+             S (MultiSet.fromList [
+               L (["want"], ([One Visa,One D], [One Vgelem])),
+               S (MultiSet.fromList [
+                 L (["can"], ([One V],[One Visa])),
+                 S (MultiSet.fromList [
+                   L (["speak"], ([One D],[One V])),
+                   L (["English"], ([],[One D])) ]) ]) ]) ]) ])
 
-    (["-s"], ([One Modal,One K],[One T])),
-    (["-s"], ([One Have,One K],[One T])),
-    (["-s"], ([One Be,One K],[One T])),
-    (["-s"], ([One Vx,One K],[One T])),
-
-    (["will"], ([One Have],[One Modal])),
-    (["will"], ([One Be],[One Modal])),
-    (["will"], ([One Vx],[One Modal])),
-
-    (["have"], ([One Been],[One Have])),
-    (["have"], ([One Ven],[One Have])),
-
-    (["be"], ([One Ving],[One Be])),
-    (["been"], ([One Ving],[One Been])),
-
-    ([], ([One V,One D],[One Vx])),
-    (["-en"], ([One V,One D],[One Ven])),
-    (["-ing"], ([One V,One D],[One Ving])),
-
-    (["eat"], ([One D,One K],[One V])),
-    (["laugh"], ([],[One V])),
-
-    (["the"], ([One N],[One D,One K])),
-    (["which"], ([One N],[One D,One K,One Wh])),
-
-    (["king"], ([],[One N])),
-    (["pie"], ([],[One N]))
-    ]
-
-ex27a = ppMg g133
-
-ex27f :: SO
-ex27f = S (MultiSet.fromList [
-          S (MultiSet.fromList [
-            L (["which"], ([One N],[One D,One K,One Wh])),
-            L (["pie"], ([], [One N])) ]),
-          S (MultiSet.fromList [
-            L (["+"], ([One T,One Wh],[One C])),
-            S (MultiSet.fromList [
-              S (MultiSet.fromList [
-                L (["the"], ([One N],[One D,One K])),
-                L (["king"], ([], [One N])) ]),
-              S (MultiSet.fromList [
-                L (["+s"], ([One Have,One K],[One T])),
-                S (MultiSet.fromList [
-                  L (["have"], ([One Been],[One Have])),
-                  S (MultiSet.fromList [
-                    L (["been"], ([One Ving],[One Been])),
-                    S (MultiSet.fromList [
-                      S (MultiSet.fromList [
-                        L (["the"], ([One N],[One D,One K])),
-                        L (["king"], ([], [One N])) ]),
-                      S (MultiSet.fromList [
-                        L (["+ing"], ([One V,One D],[One Ving])),
-                        S (MultiSet.fromList [
-                          S (MultiSet.fromList [
-                             L (["which"], ([One N],[One D,One K,One Wh])),
-                             L (["pie"], ([], [One N])) ]),
-                          S (MultiSet.fromList [
-                            L (["eat"], ([One D,One K],[One V])),
-                            S (MultiSet.fromList [
-                               L (["which"], ([One N],[One D,One K,One Wh])),
-                               L (["pie"], ([], [One N])) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ])
-
-ex27g = ppSO ex27f
-ex27h = ppWS(ell(ex27f))
-ex27i = ppSO(o_svo(ex27f))
-ex27j = ppSO(o_sov(ex27f))
-
--- ex27im = ppSO(fa(o_sov(ex27f)))
-ex27k = (ppSO.snd) (h 0 ex27f)
+ex1202 = ppSO ex1201
+ex1203 = ppWS (ell ex1201)
+ex1204 = ppSO (snd (h 0 ex1201)) -- head movement
+ex1204a = ppSO (o_svo (snd (h 0 ex1201))) -- head movement
+ex1204b = ppSO (o_sov (snd (h 0 ex1201))) -- head movement
