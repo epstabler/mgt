@@ -196,12 +196,11 @@ class WS:
         no1.append(self._labels[i])
     return (WS(yes0,yes1), WS(no0,no1))
 
-
-# A FUNCTION ON LISTS
-def partition(p, lst:list) -> tuple:
-  """ given boolean function p, partition list into two lists: (p-elements, non-p elements) """
+# PARTITION FUNCTION
+def partition(p, t) -> tuple:
+  """ given boolean function p, partition list/tuple into pair of lists: (p-elements, non-p elements) """
   yes, no = [], []
-  for d in lst:
+  for d in t:
     if p(d): yes.append(d)
     else: no.append(d)
   return (yes, no)
