@@ -9,19 +9,24 @@ run with the ghcup-recommended ghci versions for some time.
 To run a simple example of binary merge, type:
 
 ```
+> cd MgBin
 > ghci
-ghci> :load MgBinTests
-ghci> ex07c
+ghci> :l MgBinTests
+ghci> ex0019a
+ghci> ex0019b
+ghci> ex0204a
 ```
 
 To use Mg with its unbounded branching,
 you need the multiset library which can be loaded with this command:
 
 ```
+> cd Mg
 > stack ghci --package multiset
-ghci> :load MgTests
-ghci> ex07c
-ghci> ex22c
+ghci> :l MgTests
+ghci> ex24a
+ghci> ex0204a
+ghci> ex1204a
 ```
 
 See the code and comments for many other examples.
