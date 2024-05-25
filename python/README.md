@@ -8,9 +8,6 @@ For structure display, I use nltk which can be installed with:
 > pip install nltk
 ```
 
-This code was designed to mimic the prior Haskell implementation, so it
-has a functional style.
-
 To run some simple examples, type:
 
 ```
