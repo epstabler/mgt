@@ -409,5 +409,5 @@ def ex1203(): ell(ex1201()).pp() # WS
 def ex1204(): h(0,ex1201())[1].pp() # SO with head movement
 def ex1204a(): o_svo(h(0,ex1201())[1]).pp()
 def ex1204b(): o_sov(h(0,ex1201())[1]).pp()
-ex1204a()
+#ex1204a()
 #ex0204b()
