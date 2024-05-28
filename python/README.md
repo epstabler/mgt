@@ -1,7 +1,8 @@
 # Python implementations of MG structure-defining functions
 
 I used [python 3.11](https://www.python.org/).
-No exotic language features are used, so this should work for some time.
+No exotic language features are used, so this should work for
+near-future versions of the language.
 For structure display, I use nltk which can be installed with:
 
 ```
