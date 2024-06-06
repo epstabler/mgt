@@ -5,7 +5,7 @@ import qualified Data.MultiSet as MultiSet
 import Data.List (partition)
 
 data F = C | D | N | V | A | P | Wh | Pred | Predx | T | K | Vx | Scr | Modal | Have | Be | Been |
-         Ving | Ven | Lf | Rt | B | Visa | Vgelem deriving (Show, Eq, Ord)
+         Ving | Ven | Do | Lf | Rt | B | Visa | Vgelem deriving (Show, Eq, Ord)
 data Ft = One F | Plus F deriving (Show, Eq, Ord)
 type Label = ([Ft], [Ft])
 type Lex = ([String], Label)

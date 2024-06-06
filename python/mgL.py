@@ -2,11 +2,7 @@
 from mg import *  # this imports frozendict, mgTypes, mg
 
 def ell(so):
-  """ Map so to its derived workspace, if any.
-   NB: For derived SOs, ell is recursively mapped to children, going right down to the leaves.
-   Then, from the leaves, d is applied to build workspaces bottom-up.
-   So this is a multi bottom-up transduction on unordered trees (i.e. on multisets).
-  """
+  """ Map so to its derived workspace, if any. """
   if isinstance(so,LI) or isinstance(so,O): return so.to_ws()
   else:
     (negwss, poswss) = partition (lambda x: x.is_neg(), map(ell,so.to_tuple())) ## partition neg WSs (def in mgTypes.py)
