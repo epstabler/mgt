@@ -1,7 +1,5 @@
 # Python implementations of MG structure-defining functions
 
-NB: THIS CODE HAS NOT YET CAUGHT UP WITH THE HASKELL
-
 I used [python 3.11](https://www.python.org/).
 No exotic language features are used, so this should work for some time.
 For structure display, I use nltk which can be installed with:
