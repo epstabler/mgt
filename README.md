@@ -1,7 +1,9 @@
 # mgt
 MG decomposed and reformulated with interfaces.
 
-Preliminary description in slides. A paper describing the project is forthcoming.
+The file mgtempered.pdf is a draft. Comments welcome.
+
+The slides present an outline and code listing
 
 ** preliminary implementations, in progress **
 
@@ -15,3 +17,5 @@ This code provides the clearest formulation of this grammar formalism.
 ## python/ 
 
 Ported from the Haskell, a Python 3.x implementation of merge, *-merge, labeling, interfaces.
+
+THE PYTHON CODE HAS NOT YET CAUGHT UP WITH THE HASKELL

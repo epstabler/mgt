@@ -1,5 +1,4 @@
--- https://github.com/epstabler/mgt/tree/main/haskell/Mg/MgTests.hs
-module MgTests where           -- Multiset needed. E.g., start ghci with: stack ghci --package multiset
+module MgTests where           -- Multiset needed. E.g., start ghci with: stack ghci multiset
 import Data.MultiSet (MultiSet)
 import qualified Data.MultiSet as MultiSet
 import Data.List (partition)
@@ -103,7 +102,7 @@ ex007 = ppWS ex006
 ex008 = d [ex006, lexWS (g112!!1)]  -- C[+wh] the cat likes which food
 ex009 = ppWS ex008
 
-ex0010 = d [ex008]  -- which food C[+wh] the cat likes which food
+ex0010 = d [ex008, ex002]  -- which food C[+wh] the cat likes which food
 ex0011 = ppWS ex0010
 
 ex0012 = d [lexWS (g112!!10), ex0010]  -- knows which food C[+wh] the cat likes which food
@@ -133,36 +132,36 @@ gxx = [
 ex01 = ppMg gxx
 
 -- deriving complete aa from gxx requires 7 merges, with remnant movement
-ex0100 = d [lexWS (gxx!!2), lexWS (gxx!!4)]  -- a
+ex0100 = d [lexWS (gxx!!2), lexWS (gxx!!4)]  -- a right
 ex0101 = ppWS ex0100
-ex0102 = d [ex0100]
+ex0102 = d [ex0100, lexWS (gxx!!4)] -- MOVE
 ex0103 = ppWS ex0102
-ex0104 = d [lexWS (gxx!!0), ex0102]   -- a
+ex0104 = d [lexWS (gxx!!0), ex0102]   -- a left
 ex0105 = ppWS ex0104
-ex0106 = d [ex0104]
+ex0106 = d [ex0104, lexWS (gxx!!4)] -- MOVE
 ex0107 = ppWS ex0106 -- 
 ex0108 = d [lexWS (gxx!!5), ex0106]
 ex0109 = ppWS ex0108
-ex0110 = d [ex0108]
+ex0110 = d [ex0108, ex0102] -- MOVE
 ex0111 = ppWS ex0110
-ex0112 = d [ex0110]
+ex0112 = d [ex0110, ex0106] -- MOVE
 ex0113 = ppWS ex0112
 ex0113a = ppSO (o_svo ((head.fst) ex0112))
 
 -- deriving complete abab, we continue from ex0106
 ex0114 = d [lexWS (gxx!!3), ex0106]   -- b a a
 ex0115 = ppWS ex0114
-ex0116 = d [ex0114]
+ex0116 = d [ex0114, ex0102]  -- MOVE
 ex0117 = ppWS ex0116
 ex0118 = d [lexWS (gxx!!1), ex0116]   -- b b a a
 ex0119 = ppWS ex0118
-ex0120 = d [ex0118]
+ex0120 = d [ex0118,ex0106] -- MOVE
 ex0121 = ppWS ex0120 -- 
 ex0122 = d [lexWS (gxx!!5), ex0120]
 ex0123 = ppWS ex0122
-ex0124 = d [ex0122]
+ex0124 = d [ex0122,ex0116] -- MOVE
 ex0125 = ppWS ex0124
-ex0126 = d [ex0124]
+ex0126 = d [ex0124,ex0120] -- MOVE
 ex0127 = ppWS ex0126
 
 ex0128 = ppSO ((head.fst) ex0126)
@@ -391,8 +390,8 @@ ex24 = S (MultiSet.fromList
                   L (["brambleberries"], ([], [One D])) ]) ]) ]) ]) ])
 
 ex24a = ppWS (ell ex24)
---ex24b = ppSO (o_svo ex24)
---ex24c = ppSO (o_sov ex24)
+ex24b = ppSO (o_svo ex24)
+ex24c = ppSO (o_sov ex24)
 
 -- this example is (an English approximation to) Figure 6, left -- atb wh movement
 ex25 :: SO
@@ -554,3 +553,47 @@ ex28b = ppSO (snd (h 0 ex28))
 ex28c = ppSO (o_svo (snd (h 0 ex28)))
 ex28d = ppSO (o_sov (snd (h 0 ex28)))
 
+ex29 =
+   S (MultiSet.fromList [
+     L ([""], ([One T],[One C])),
+     S (MultiSet.fromList [
+       L (["he"], ([],[One D,One K])),
+       S (MultiSet.fromList [
+         L (["~s"], ([One Vx,One K],[One T])),
+         S (MultiSet.fromList [
+           L (["he"], ([],[One D,One K])),
+           S (MultiSet.fromList [
+             L (["+"], ([One V,One D],[One Vx])),
+             S (MultiSet.fromList [
+               L (["know"], ([One C],[One V])),
+               S (MultiSet.fromList [
+                 S (MultiSet.fromList [
+                   L (["which"], ([One N],[One D,One K,One Wh])),
+                   L (["wine"], ([],[One N])) ]),
+                 S (MultiSet.fromList [
+                   L (["+"], ([One T,One Wh],[One C])),
+                   S (MultiSet.fromList [
+                     S (MultiSet.fromList [
+                       L (["the"], ([One N],[One D,One K])),
+                       L (["king"], ([],[One N])) ]),
+                     S (MultiSet.fromList [
+                       L (["~s"], ([One Vx,One K],[One T])),
+                       S (MultiSet.fromList [
+                         S (MultiSet.fromList [
+                           L (["the"], ([One N],[One D,One K])),
+                           L (["king"], ([],[One N])) ]),
+                         S (MultiSet.fromList [
+                           L (["+"], ([One V,One D],[One Vx])),
+                           S (MultiSet.fromList [
+                             S (MultiSet.fromList [
+                               L (["which"], ([One N],[One D,One K,One Wh])),
+                               L (["wine"], ([],[One N])) ]),
+                             S (MultiSet.fromList [
+                               L (["like"], ([One D,One K],[One V])),
+                               S (MultiSet.fromList [
+                                 L (["which"], ([One N],[One D,One K,One Wh])),
+                                 L (["wine"], ([],[One N])) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ])
+ex29a = ppSO ex29
+ex29b = ppWS (ell ex29)
+ex29c = ppSO (o_svo (snd (h 0 ex29)))
+ex29d = ppSO (o_sov (snd (h 0 ex29)))

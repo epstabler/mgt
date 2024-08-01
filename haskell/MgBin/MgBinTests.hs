@@ -238,40 +238,41 @@ ex0204 = ppSO (snd (h 0 ex0201)) -- head movement
 ex0204a = ppSO (o_svo (snd (h 0 ex0201))) -- head movement
 ex0204b = ppSO (o_sov (snd (h 0 ex0201))) -- head movement
 
+-- NOT WORKING YET
 ex28 :: SO
-ex28 = S (MultiSet.fromList [
-         L (["who"], ([],[One D,One K,One Wh])),
-         S (MultiSet.fromList [
-           L (["+"], ([One T,One Wh],[One C])),
-           S (MultiSet.fromList [
-             S (MultiSet.fromList [
-               L (["Jack"], ([],[One D,One K])),
-               S (MultiSet.fromList [
-                 L (["+s"], ([One Do,One K],[One T])),
-                   S (MultiSet.fromList [
-                     L (["Jack"], ([],[One D,One K])),
-                     S (MultiSet.fromList [
-                       L (["do"], ([One V,One D],[One Do])),
-                       S (MultiSet.fromList [
-                         L (["who"], ([],[One D,One K,One Wh])),
-                         S (MultiSet.fromList [
-                           L (["praise"], ([One D,One K],[One V])),
-                           L (["who"], ([],[One D,One K,One Wh])) ]) ]) ]) ]) ]) ]),
-             S (MultiSet.fromList [
-                L (["and"], ([One T,Plus T],[One T])),
-                S (MultiSet.fromList [
-                  L (["Mary"], ([],[One D,One K])),
-                  S (MultiSet.fromList [
-                    L (["+s"], ([One Do,One K],[One T])),
-                      S (MultiSet.fromList [
-                        L (["Mary"], ([],[One D,One K])),
-                        S (MultiSet.fromList [
-                          L (["do"], ([One V,One D],[One Do])),
-                          S (MultiSet.fromList [
-                            L (["who"], ([],[One D,One K,One Wh])),
-                            S (MultiSet.fromList [
-                              L (["ignore"], ([One D,One K],[One V])),
-                              L (["who"], ([],[One D,One K,One Wh])) ]) ]) ]) ]) ]) ]) ]) ]) ]) ])
+ex28 = S (Set.fromList [
+         L (["who"], ([],[D,K,Wh])),
+         S (Set.fromList [
+           L (["+"], ([T,Wh],[C])),
+           S (Set.fromList [
+             S (Set.fromList [
+               L (["Jack"], ([],[D,K])),
+               S (Set.fromList [
+                 L (["+s"], ([Do,K],[T])),
+                   S (Set.fromList [
+                     L (["Jack"], ([],[D,K])),
+                     S (Set.fromList [
+                       L (["do"], ([V,D],[Do])),
+                       S (Set.fromList [
+                         L (["who"], ([],[D,K,Wh])),
+                         S (Set.fromList [
+                           L (["praise"], ([D,K],[V])),
+                           L (["who"], ([],[D,K,Wh])) ]) ]) ]) ]) ]) ]),
+             S (Set.fromList [
+                L (["and"], ([T,T],[T])),
+                S (Set.fromList [
+                  L (["Mary"], ([],[D,K])),
+                  S (Set.fromList [
+                    L (["+s"], ([Do,K],[T])),
+                      S (Set.fromList [
+                        L (["Mary"], ([],[D,K])),
+                        S (Set.fromList [
+                          L (["do"], ([V,D],[Do])),
+                          S (Set.fromList [
+                            L (["who"], ([],[D,K,Wh])),
+                            S (Set.fromList [
+                              L (["ignore"], ([D,K],[V])),
+                              L (["who"], ([],[D,K,Wh])) ]) ]) ]) ]) ]) ]) ]) ]) ]) ])
 
 ex28a = ppWS (ell ex28)
 ex28b = ppSO (snd (h 0 ex28))

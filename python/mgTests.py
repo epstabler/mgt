@@ -37,7 +37,7 @@ def ex007(): ex006().pp()
 def ex008(): return d( [ex006(), g112[1].to_ws()] )  # C[+wh] the cat likes which food
 def ex009(): ex008().pp()
 
-def ex0010(): return d( [ex008()] )  # which food C[+wh] the cat likes which food
+def ex0010(): return d( [ex008(), ex002()] )  # which food C[+wh] the cat likes which food
 def ex0011(): ex0010().pp()
 
 def ex0012(): return d( [g112[10].to_ws(), ex0010()] )  # knows which food C[+wh] the cat likes which food
@@ -50,7 +50,8 @@ def ex0015(): ex0014().pp()
 def ex0016(): return d( [g112[0].to_ws(), ex0014()] )  # C Jo knows which food C[+wh] the cat likes which food
 def ex0017(): ex0016().pp()
 def ex0018(): ex0016()._sos[0].pp() # print head SO only
-def ex0019(): ell(ex0016()._sos[0]).pp()
+
+def ex0019(): ell(ex0016()._sos[0]).pp() # test that ell does the same thing as previous steps
 def ex0019a(): o_svo(ex0016()._sos[0]).pp()
 def ex0019b(): o_sov(ex0016()._sos[0]).pp()
 
@@ -69,34 +70,34 @@ def ex01(): ppMg(gxx)
 ## deriving complete aa from gxx requires 7 merges, with remnant movement
 def ex0100(): return d([gxx[2].to_ws(), gxx[4].to_ws()])  # a
 def ex0101(): ex0100().pp()
-def ex0102(): return d([ex0100()])
+def ex0102(): return d([ex0100(), gxx[4].to_ws()])
 def ex0103(): ex0102().pp()
 def ex0104(): return d([gxx[0].to_ws(), ex0102()])   # a
 def ex0105(): ex0104().pp()
-def ex0106(): return d([ex0104()])
+def ex0106(): return d([ex0104(), gxx[4].to_ws()])
 def ex0107(): ex0106().pp()
 def ex0108(): return d([gxx[5].to_ws(), ex0106()])
 def ex0109(): ex0108().pp()
-def ex0110(): return d([ex0108()])
+def ex0110(): return d([ex0108(), ex0102()])
 def ex0111(): ex0110().pp()
-def ex0112(): return d([ex0110()])
+def ex0112(): return d([ex0110(), ex0106()])
 def ex0113(): ex0112().pp()
 # def ex0113a(): ppSO (o_svo((head.fst) ex0112))
 
 ## deriving complete abab, we continue from ex0106
 def ex0114(): return d([gxx[3].to_ws(), ex0106()])   # b a a
 def ex0115(): ex0114().pp()
-def ex0116(): return d([ex0114()])
+def ex0116(): return d([ex0114(),ex0102()])
 def ex0117(): ex0116().pp()
 def ex0118(): return d([gxx[1].to_ws(), ex0116()])   # b b a a
 def ex0119(): ex0118().pp()
-def ex0120(): return d([ex0118()])
+def ex0120(): return d([ex0118(),ex0106()])
 def ex0121(): ex0120().pp()
 def ex0122(): return d([gxx[5].to_ws(), ex0120()])
 def ex0123(): ex0122().pp()
-def ex0124(): return d([ex0122()])
+def ex0124(): return d([ex0122(),ex0116()])
 def ex0125(): ex0124().pp()
-def ex0126(): return d([ex0124()])
+def ex0126(): return d([ex0124(),ex0120()])
 def ex0127(): ex0126().pp()
 
 ## examples from \S1.3.3 of the paper: replicating Stabler (2001: \S2.1)

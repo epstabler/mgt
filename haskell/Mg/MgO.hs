@@ -1,5 +1,4 @@
--- https://github.com/epstabler/mgt/tree/main/haskell/Mg/MgO.hs
-module MgO where  -- Multiset needed. E.g., start ghci with: stack ghci --package multiset
+module MgO where  -- Multiset needed. E.g., start ghci with: stack ghci multiset
 import Data.MultiSet (MultiSet)
 import qualified Data.MultiSet as MultiSet
 import Data.List (partition)

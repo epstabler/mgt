@@ -22,20 +22,20 @@ def fplus(feature) -> Tuple[str,bool]:
 def match(wss:list) -> Tuple[WS,WS]:
   """ partition elements of elements of WSs into (matchingWS, non-matchingWS) """
   (negwss, poswss) = partition (lambda x: x.is_neg(), wss) ## partition neg WSs (def in mgTypes.py)
-  if len(negwss) != 1: raise RuntimeError("match: too many neg workspaces")
+  if len(negwss) != 1: raise RuntimeError("too many neg workspaces")
   so0, sos0, label0, labels0 = negwss[0]._sos[0], negwss[0]._sos[1:], negwss[0]._labels[0], negwss[0]._labels[1:]
   (f, plus) = fplus(label0._neg[0])
   (IMmatches, IMothers) = WS(sos0,labels0).ppartition(lambda x: x[1]._pos[0] == f) # partition matches
   if IMmatches._sos:
-    if poswss != []: raise RuntimeError("match: too many im pos workspaces")
     so1, label1 = IMmatches._sos[0], IMmatches._labels[0]
+    if len(poswss) != 1 or str(poswss[0]._sos[0]) != str(so1): raise RuntimeError("move-over-merge error")
     return ( WS([so0,so1], [label0, label1]), IMothers )
   else:
     pws, pwss = poswss[0], poswss[1:]
     (EMmatches, EMothers) = pws.ppartition(lambda x: x[1]._pos[0] == f) # partition matches
     if EMmatches._sos:
       so1, label1 = EMmatches._sos[0], EMmatches._labels[0]
-      if plus and str(IMothers) == str(EMothers): # str to avoid comparison issues
+      if plus and str(IMothers) == str(EMothers):                       # str for frozen dict comparison issues
         moreComps = atb(label1, EMothers, pwss)
         return ( WS([so0,so1], [label0, label1]).pappend(moreComps), IMothers )
       else:
@@ -46,7 +46,7 @@ def match(wss:list) -> Tuple[WS,WS]:
 def atb(label, movers, wss) -> WS:
   additionalComplementWS = WS([],[])
   for ws in wss:
-    (matches, others) = ws.ppartition(lambda x: str(x[1]) == str(label)) # str to avoid comparison issues
+    (matches, others) = ws.ppartition(lambda x: str(x[1]) == str(label)) # str for comparison issues
     if len(matches._sos) == 1: # and others == movers:
       additionalComplementWS = additionalComplementWS.pappend(matches)
     else:

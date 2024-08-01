@@ -1,5 +1,4 @@
--- https://github.com/epstabler/mgt/tree/main/haskell/Mg/MgH.hs
-module MgH where  -- Multiset needed. E.g., start ghci with: stack ghci --package multiset
+module MgH where  -- Multiset needed. E.g., start ghci with: stack ghci multiset
 import Data.MultiSet (MultiSet)
 import qualified Data.MultiSet as MultiSet
 import Data.List (partition)
@@ -21,35 +20,23 @@ h i (S s) =
         if isCoord (L (w,fs))
         then 
           let (hs,pso) = h i ((head.fst) pws) in
-          let psos = atbh i hs pwss in
-            if i == 0
-            then (hs, S (MultiSet.fromList (L (w, fs) : pso : psos)))
-            else
-              if i == 1
-              then (hs, S (MultiSet.fromList (L (w, fs) : pso : psos)))
-              else (hs, S (MultiSet.fromList (L (w, fs) : pso : psos)))
+          let psos = atbh i hs pwss in 
+            (hs, S (MultiSet.fromList (L (w, fs) : pso : psos)))
         else
           let i' = inc w + max 0 (i-1) in
           let (hs,pso) = h i' ((head.fst) pws) in
-          let psos = atbh i' hs pwss in
-            if i == 0
-            then ([], S (MultiSet.fromList (L (hs ++ w, fs) : pso : psos)))
-            else
-              if i == 1
-              then (hs ++ w, S (MultiSet.fromList (L ([], fs) : pso : psos)))
-              else (w ++ hs, S (MultiSet.fromList (L ([], fs) : pso : psos)))
+          let psos = atbh i' hs pwss in case i of
+            0 -> ([], S (MultiSet.fromList (L (hs ++ w, fs) : pso : psos)))
+            1 -> (hs ++ w, S (MultiSet.fromList (L ([], fs) : pso : psos)))
+            _ -> (w ++ hs, S (MultiSet.fromList (L ([], fs) : pso : psos)))
       nso ->
         if isCoord nso
         then
           let (hs,nso') = h i nso in
           let (hs,pso) = h i ((head.fst) pws) in
-          let psos = atbh i hs pwss in
-            if i == 0
-            then ([], S (MultiSet.fromList (nso' : pso : psos)))
-            else
-              if i == 1
-              then (hs, S (MultiSet.fromList (nso' : pso : psos)))
-              else (hs, S (MultiSet.fromList (nso' : pso : psos)))
+          let psos = atbh i hs pwss in case i of
+            0 -> ([], S (MultiSet.fromList (nso' : pso : psos)))
+            _ -> (hs, S (MultiSet.fromList (nso' : pso : psos)))
         else
           let (hs,nso') = h i nso in
           let psos = map (head.fst) (pws:pwss) in

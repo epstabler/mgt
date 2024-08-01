@@ -5,7 +5,7 @@ import qualified Data.Set as Set
 import Data.List (partition)
 
 data Ft = C | D | N | V | A | P | Wh | B | Lf | Rt | T | K | Vx |
-          Modal | Have | Be | Been | Ving | Ven deriving (Show, Eq, Ord)
+          Modal | Have | Be | Been | Ving | Ven | Do deriving (Show, Eq, Ord)
 type Label = ([Ft], [Ft])
 type Lex = ([String], Label)
 data PhTree = Pl Lex | Ps [PhTree] deriving (Show, Eq, Ord)
