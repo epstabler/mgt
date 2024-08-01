@@ -1,4 +1,3 @@
-""" https://github.com/epstabler/mgt/tree/main/python/mgO.py """
 from mgH import *  # this imports frozendict, mgTypes, mg, mgL, mgH
 
 def o_svo(so) -> O:

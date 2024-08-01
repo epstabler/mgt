@@ -1,4 +1,3 @@
-""" https://github.com/epstabler/mgt/tree/main/python/mgTests.py """
 from mgO import *  # this imports frozendict, mgTypes, mg, mgL, mgH and mgO
 from nltk.tree import Tree # optional -- for graphical display
 

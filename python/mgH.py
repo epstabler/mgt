@@ -1,4 +1,3 @@
-""" https://github.com/epstabler/mgt/tree/main/python/mgH.py """
 from mgL import *           # this imports frozendict, mgTypes, mg, mgL
 
 def inc(h) -> int:

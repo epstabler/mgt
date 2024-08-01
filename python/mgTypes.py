@@ -1,4 +1,3 @@
-""" https://github.com/epstabler/mgt/tree/main/python/mgTypes.py """
 import frozendict
 
 class SO:
