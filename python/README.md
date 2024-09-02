@@ -2,16 +2,20 @@
 
 I used [python 3.11](https://www.python.org/).
 No exotic language features are used, so this should work for some time.
-For structure display, I use nltk which can be installed with:
+
+For the implementation of multisets, frozendict.
+
+And for graphical structure display, I use nltk -- but that is optional.
 
 ```
-> pip install nltk
+> pip3 install nltk
+> pip3 install frozendict
 ```
 
 To run some simple examples, type:
 
 ```
-> python
+> python3
 >>> from mgTests import *
 >>> ex24a()
 >>> ex0019()

@@ -3,7 +3,6 @@ import Data.MultiSet (MultiSet)
 import qualified Data.MultiSet as MultiSet
 import Data.List (partition)
 import Mg
-import MgL
 
 -- map strings [w,...] to number of head-incorporator +'s on w, else 0
 inc :: [String] -> Int
@@ -44,7 +43,7 @@ h i (S s) =
   where
     isCoord :: SO -> Bool
     isCoord (S s) = let ([(so:_,_)],_) = partition ((/= []).fst.head.snd) (map ell (MultiSet.toList s)) in isCoord so
-    isCoord (L (w, (_:(Plus _):_,_))) = True    -- catch coord case with plus
+    isCoord (L (w, (_:f:_,_))) = snd (fplus f)    -- catch coord case with plus
     isCoord _ = False
 
     atbh :: Int -> [String] -> [WS] -> [SO]  -- collect additional comps with same hs extracted
