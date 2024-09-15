@@ -6,7 +6,7 @@ to develop and test the code in this directory.
 No exotic language features are used, so hopefully this code will
 run with the ghcup-recommended ghci versions for some time.
 
-To run a simple example of binary merge, type:
+To run some simple examples of binary merge, type:
 
 ```
 > cd MgBin
@@ -17,8 +17,7 @@ ghci> ex0019b
 ghci> ex0204a
 ```
 
-To use Mg with its unbounded branching,
-you need the multiset library which can be loaded with this command:
+To run Mg with its unbounded branching:
 
 ```
 > cd Mg
