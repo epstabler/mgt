@@ -3,14 +3,14 @@
 I installed ghc with [ghcup](https://www.haskell.org/ghcup/), and then used
 [ghci 9.4.8](https://downloads.haskell.org/ghc/latest/docs/users_guide/ghci.html)
 to develop and test the code in this directory.
-No exotic language features are used, so this should 
+No exotic language features are used, so hopefully this code will
 run with the ghcup-recommended ghci versions for some time.
 
 To run a simple example of binary merge, type:
 
 ```
 > cd MgBin
-> ghci
+> ghci --package multiset
 ghci> :l MgBinTests
 ghci> ex0019a
 ghci> ex0019b
@@ -22,7 +22,7 @@ you need the multiset library which can be loaded with this command:
 
 ```
 > cd Mg
-> stack ghci --package multiset
+> ghci --package multiset
 ghci> :l MgTests
 ghci> ex24a
 ghci> ex0204a
