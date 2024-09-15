@@ -1,6 +1,5 @@
-module MgTests where           -- Multiset needed. E.g., start ghci with: ghci -package multiset
-import Data.MultiSet (MultiSet)
-import qualified Data.MultiSet as MultiSet
+module MgTests where
+import Data.MultiSet (MultiSet, toList, fromList, elems) -- Multiset needed. E.g.: ghci -package multiset
 import Data.List (partition)
 import Mg
 import MgH
@@ -30,7 +29,7 @@ lex2str (s,f) = "(" ++ joinstr " " s ++ ", " ++ (label2str f) ++ ")"
 ppMg = mapM_ (putStrLn.lex2str)
 
 -- convert SO to pretty string
-so2str (S so) = "{" ++ (joinstr ", " (map so2str (MultiSet.elems so))) ++ "}"
+so2str (S so) = "{" ++ (joinstr ", " (map so2str (elems so))) ++ "}"
 so2str (L (w,label)) = "(" ++ (joinstr " " w) ++ ", " ++ (label2str label) ++ ")"
 
 -- pretty print SO
@@ -38,7 +37,7 @@ ppSO so = do { ppSO' 0 so ; putStrLn "" }
 
 -- pretty print SO with indent i
 ppSO' i (L w) = do { putStr (so2str (L w)) }
-ppSO' i (S so) = do { putStr "{ " ; ppSOs (i+2) (MultiSet.elems so) ; putStr " }" }
+ppSO' i (S so) = do { putStr "{ " ; ppSOs (i+2) (elems so) ; putStr " }" }
 ppSO' i (O t) = do { putStr "[ " ; ppPh' (i+2) t ; putStr " ]" }
 
 -- pretty print PhTree
@@ -201,35 +200,35 @@ g133 = [
 ex02 = ppMg g133
 
 ex0201 :: SO
-ex0201 = S (MultiSet.fromList [
-          S (MultiSet.fromList [
+ex0201 = S (fromList [
+          S (fromList [
             L (["which"], (["N"],["D","K","Wh"])),
             L (["pie"], ([], ["N"])) ]),
-          S (MultiSet.fromList [
+          S (fromList [
             L (["+"], (["T","Wh"],["C"])),
-            S (MultiSet.fromList [
-              S (MultiSet.fromList [
+            S (fromList [
+              S (fromList [
                 L (["the"], (["N"],["D","K"])),
                 L (["king"], ([], ["N"])) ]),
-              S (MultiSet.fromList [
+              S (fromList [
                 L (["+s"], (["Have","K"],["T"])),
-                S (MultiSet.fromList [
+                S (fromList [
                   L (["have"], (["Been"],["Have"])),
-                  S (MultiSet.fromList [
+                  S (fromList [
                     L (["been"], (["Ving"],["Been"])),
-                    S (MultiSet.fromList [
-                      S (MultiSet.fromList [
+                    S (fromList [
+                      S (fromList [
                         L (["the"], (["N"],["D","K"])),
                         L (["king"], ([], ["N"])) ]),
-                      S (MultiSet.fromList [
+                      S (fromList [
                         L (["+ing"], (["V","D"],["Ving"])),
-                        S (MultiSet.fromList [
-                          S (MultiSet.fromList [
+                        S (fromList [
+                          S (fromList [
                              L (["which"], (["N"],["D","K","Wh"])),
                              L (["pie"], ([], ["N"])) ]),
-                          S (MultiSet.fromList [
+                          S (fromList [
                             L (["eat"], (["D","K"],["V"])),
-                            S (MultiSet.fromList [
+                            S (fromList [
                                L (["which"], (["N"],["D","K","Wh"])),
                                L (["pie"], ([], ["N"])) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ])
 
@@ -241,25 +240,25 @@ ex0204b = ppSO (o_sov (snd (h 0 ex0201))) -- head movement
 
 -- Example of Figure 2, demonstrating multiple occurrences
 ex08 :: SO
-ex08 = S (MultiSet.fromList [
+ex08 = S (fromList [
         L ([], (["T"],["C"])),
-        S (MultiSet.fromList
+        S (fromList
          [ L (["the man"], ([],["D", "K", "Scr"])),
-           S (MultiSet.fromList
+           S (fromList
              [ L (["the man"], ([],["D", "K", "Scr"])),
-             S (MultiSet.fromList
+             S (fromList
                [ L ([], (["V", "K", "Scr"],["T"])),
-               S (MultiSet.fromList
+               S (fromList
                  [ L (["the man"], ([],["D", "K", "Scr"])),
-                 S (MultiSet.fromList [
+                 S (fromList [
                    L (["carefully"], (["V","Scr"], ["V"])),
-                   S (MultiSet.fromList
+                   S (fromList
                      [ L (["the man"], ([],["D", "K", "Scr"])),
-                     S (MultiSet.fromList [
+                     S (fromList [
                        L (["the man"], ([],["D", "K", "Scr"])),
-                       S (MultiSet.fromList [
+                       S (fromList [
                          L ([], (["v","K","D"], ["V"])),
-                         S (MultiSet.fromList [
+                         S (fromList [
                            L (["praises"], (["D"], ["v"])),
                            L (["the man"], ([],["D", "K", "Scr"])) ]) ]) ]) ]) ]) ]) ]) ]) ]) ])
 
@@ -270,41 +269,41 @@ ex08c = ppSO (o_sov ex08)
 -- this example is from Figure 3
 ex09 :: SO
 ex09 =
- S (MultiSet.fromList [
+ S (fromList [
    L ([""], (["T"], ["C"])),
-   S (MultiSet.fromList [
+   S (fromList [
      L (["I"], ([],["D", "K"])),
-     S (MultiSet.fromList [
+     S (fromList [
        L ([""], (["V","K"], ["T"])),
-       S (MultiSet.fromList [
+       S (fromList [
          L (["I"], ([],["D", "K"])),
-         S (MultiSet.fromList [
+         S (fromList [
            L (["wonder"], (["C","D"], ["V"])),
-           S (MultiSet.fromList [
-             S (MultiSet.fromList [
+           S (fromList [
+             S (fromList [
                L ([""], (["T","Wh"], ["C"])),
-               S (MultiSet.fromList [
-                 S (MultiSet.fromList [
+               S (fromList [
+                 S (fromList [
                    L (["+s"], (["V","K"], ["T"])),
-                   S (MultiSet.fromList [
+                   S (fromList [
                      L (["be"], (["A"], ["V"])),
-                     S (MultiSet.fromList [
+                     S (fromList [
                        L (["how"], (["A"], ["A","Wh"])),
-                       S (MultiSet.fromList [
+                       S (fromList [
                          L (["likely"], (["T"],["A"])),
-                          S (MultiSet.fromList [
+                          S (fromList [
                             L (["to"], (["V"], ["T"])),
-                            S (MultiSet.fromList [
+                            S (fromList [
                               L (["win"], (["D"], ["V"])),
                               L (["John"], ([],["D", "K"])) ]) ]) ]) ]) ]) ]),
                L (["John"], ([],["D", "K"])) ]) ]),
-           S (MultiSet.fromList [
+           S (fromList [
              L (["how"], (["A"], ["A","Wh"])),
-             S (MultiSet.fromList [
+             S (fromList [
                L (["likely"], (["T"],["A"])),
-               S (MultiSet.fromList [
+               S (fromList [
                  L (["to"], (["V"], ["T"])),
-                 S (MultiSet.fromList [
+                 S (fromList [
                    L (["win"], (["D"], ["V"])),
                    L (["John"], ([],["D", "K"])) ]) ]) ]) ]) ]) ]) ]) ]) ]) ])
 
@@ -329,21 +328,21 @@ g121 = [
     ]
 
 ex20 :: SO
-ex20 = S (MultiSet.fromList [
+ex20 = S (fromList [
             L (["na"], (["D"], ["Pred"])),
             L (["gheimhread"], ([], ["D"])) ])
 
 ex21 :: SO
-ex21 = S (MultiSet.fromList [
+ex21 = S (fromList [
             L (["no"], (["Pred", "Pred+"], ["Pred"])),
             ex20 ])
 
 ex22 :: SO
-ex22 = S (MultiSet.fromList [
-             S (MultiSet.fromList [
+ex22 = S (fromList [
+             S (fromList [
                    L (["na"], (["D"], ["Pred"])),
                    L (["shamhradh"], ([], ["D"])) ]),
-             S (MultiSet.fromList [
+             S (fromList [
                    L (["na"], (["D"], ["Pred"])),
                    L (["fhomhar"], ([], ["D"])) ]),
              ex21 ])
@@ -354,11 +353,11 @@ ex22c = ppSO (o_sov ex22)
 
 -- This is example (10) of Figure 4 but with identical coordinates
 ex23 :: SO
-ex23 = S (MultiSet.fromList [
-             S (MultiSet.fromList [
+ex23 = S (fromList [
+             S (fromList [
                    L (["na"], (["D"], ["Pred"])),
                    L (["gheimhread"], ([], ["D"])) ]),
-             S (MultiSet.fromList [
+             S (fromList [
                    L (["na"], (["D"], ["Pred"])),
                    L (["gheimhread"], ([], ["D"])) ]),
              ex21 ])
@@ -369,18 +368,18 @@ ex23c = ppSO (o_sov ex23)
 
 -- this example is from Figure 5
 ex24 :: SO
-ex24 = S (MultiSet.fromList
+ex24 = S (fromList
         [ L ([], (["V"],["C"])),
-          S (MultiSet.fromList
+          S (fromList
            [ L (["Jo"], ([],["D"])),
-             S (MultiSet.fromList [
+             S (fromList [
                L (["likes"], (["D", "D"], ["V"])),
-               S (MultiSet.fromList [
+               S (fromList [
                 L (["blueberries"], ([], ["D"])),
                 L (["bayberries"], ([], ["D"])),
                 L (["raspberries"], ([], ["D"])),
                 L (["mulberries"], ([], ["D"])),
-                S (MultiSet.fromList [
+                S (fromList [
                   L (["and"], (["D","D+"],["D"])),
                   L (["brambleberries"], ([], ["D"])) ]) ]) ]) ]) ])
 
@@ -390,21 +389,21 @@ ex24c = ppSO (o_sov ex24)
 
 -- this example is (an English approximation to) Figure 6, left -- atb wh movement
 ex25 :: SO
-ex25 = S (MultiSet.fromList [
+ex25 = S (fromList [
          L (["who"], ([], ["D","Wh"])),
-         S (MultiSet.fromList [
+         S (fromList [
            L ([], (["V","Wh"],["C"])),
-           S (MultiSet.fromList [
-             S (MultiSet.fromList [
+           S (fromList [
+             S (fromList [
                L (["Maria"], ([], ["D"])),
-               S (MultiSet.fromList [
+               S (fromList [
                  L (["likes"], (["D","D+"],["V"])),
                  L (["who"], ([], ["D","Wh"])) ]) ]),
-             S (MultiSet.fromList [
+             S (fromList [
                L (["and"], (["V","V+"],["V"])),
-               S (MultiSet.fromList [
+               S (fromList [
                  L (["Ewa"], ([], ["D"])),
-                 S (MultiSet.fromList [
+                 S (fromList [
                    L (["hates"], (["D","D+"],["V"])),
                    L (["who"], ([], ["D","Wh"])) ]) ]) ]) ]) ]) ])
 
@@ -414,31 +413,31 @@ ex25c = ppSO (o_sov ex25)
 
 -- we can have ATB with any number of coordinates, extending the previous example
 ex26 :: SO
-ex26 = S (MultiSet.fromList [
+ex26 = S (fromList [
          L (["who"], ([], ["D","Wh"])),
-         S (MultiSet.fromList [
+         S (fromList [
            L ([], (["V","Wh"],["C"])),
-           S (MultiSet.fromList [
-             S (MultiSet.fromList [
+           S (fromList [
+             S (fromList [
                L (["Maria"], ([], ["D"])),
-               S (MultiSet.fromList [
+               S (fromList [
                  L (["likes"], (["D","D+"],["V"])),
                  L (["who"], ([], ["D","Wh"])) ]) ]),
-             S (MultiSet.fromList [
+             S (fromList [
                L (["Max"], ([], ["D"])),
-               S (MultiSet.fromList [
+               S (fromList [
                  L (["tolerates"], (["D","D+"],["V"])),
                  L (["who"], ([], ["D","Wh"])) ]) ]),
-             S (MultiSet.fromList [
+             S (fromList [
                L (["Zuzanna"], ([], ["D"])),
-               S (MultiSet.fromList [
+               S (fromList [
                  L (["pities"], (["D","D+"],["V"])),
                  L (["who"], ([], ["D","Wh"])) ]) ]),
-             S (MultiSet.fromList [
+             S (fromList [
                L (["and"], (["V","V+"],["V"])),
-               S (MultiSet.fromList [
+               S (fromList [
                  L (["Ewa"], ([], ["D"])),
-                 S (MultiSet.fromList [
+                 S (fromList [
                    L (["hates"], (["D","D+"],["V"])),
                    L (["who"], ([], ["D","Wh"])) ]) ]) ]) ]) ]) ])
 
@@ -448,15 +447,15 @@ ex26c = ppSO (o_sov ex26)
 
 -- Javanese-like multiple head movement
 ex1201 :: SO
-ex1201 = S (MultiSet.fromList [
+ex1201 = S (fromList [
            L (["++"], (["Vgelem"],["C"])),
-           S (MultiSet.fromList [
+           S (fromList [
              L (["Tono"], ([],["D"])),
-             S (MultiSet.fromList [
+             S (fromList [
                L (["want"], (["Visa","D"], ["Vgelem"])),
-               S (MultiSet.fromList [
+               S (fromList [
                  L (["can"], (["V"],["Visa"])),
-                 S (MultiSet.fromList [
+                 S (fromList [
                    L (["speak"], (["D"],["V"])),
                    L (["English"], ([],["D"])) ]) ]) ]) ]) ])
 
@@ -468,21 +467,21 @@ ex1204b = ppSO (o_sov (snd (h 0 ex1201))) -- head movement
 
 -- head movement of do
 ex27 :: SO
-ex27 = S (MultiSet.fromList [
+ex27 = S (fromList [
          L (["who"], ([],["D","K","Wh"])),
-         S (MultiSet.fromList [
+         S (fromList [
            L (["+"], (["T","Wh"],["C"])),
-           S (MultiSet.fromList [
+           S (fromList [
              L (["Maria"], ([],["D","K"])),
-             S (MultiSet.fromList [
+             S (fromList [
                L (["+s"], (["Do","K"],["T"])),
-                 S (MultiSet.fromList [
+                 S (fromList [
                    L (["Maria"], ([],["D","K"])),
-                   S (MultiSet.fromList [
+                   S (fromList [
                      L (["do"], (["V","D"],["Do"])),
-                     S (MultiSet.fromList [
+                     S (fromList [
                        L (["who"], ([],["D","K","Wh"])),
-                       S (MultiSet.fromList [
+                       S (fromList [
                          L (["like"], (["D","K"],["V"])),
                          L (["who"], ([],["D","K","Wh"])) ]) ]) ]) ]) ]) ]) ]) ])
 
@@ -493,53 +492,53 @@ ex27c = ppSO (o_sov ex27)
 
 -- ATB head movement of do+s
 ex28 :: SO
-ex28 = S (MultiSet.fromList [
+ex28 = S (fromList [
          L (["who"], ([],["D","K","Wh"])),
-         S (MultiSet.fromList [
+         S (fromList [
            L (["+"], (["T","Wh"],["C"])),
-           S (MultiSet.fromList [
+           S (fromList [
 
-             S (MultiSet.fromList [
+             S (fromList [
                L (["Jack"], ([],["D","K"])),
-               S (MultiSet.fromList [
+               S (fromList [
                  L (["+s"], (["Do","K"],["T"])),
-                   S (MultiSet.fromList [
+                   S (fromList [
                      L (["Jack"], ([],["D","K"])),
-                     S (MultiSet.fromList [
+                     S (fromList [
                        L (["do"], (["V","D"],["Do"])),
-                       S (MultiSet.fromList [
+                       S (fromList [
                          L (["who"], ([],["D","K","Wh"])),
-                         S (MultiSet.fromList [
+                         S (fromList [
                            L (["praise"], (["D","K"],["V"])),
                            L (["who"], ([],["D","K","Wh"])) ]) ]) ]) ]) ]) ]),
 
-             S (MultiSet.fromList [
+             S (fromList [
                L (["Sue"], ([],["D","K"])),
-               S (MultiSet.fromList [
+               S (fromList [
                  L (["+s"], (["Do","K"],["T"])),
-                   S (MultiSet.fromList [
+                   S (fromList [
                      L (["Sue"], ([],["D","K"])),
-                     S (MultiSet.fromList [
+                     S (fromList [
                        L (["do"], (["V","D"],["Do"])),
-                       S (MultiSet.fromList [
+                       S (fromList [
                          L (["who"], ([],["D","K","Wh"])),
-                         S (MultiSet.fromList [
+                         S (fromList [
                            L (["criticize"], (["D","K"],["V"])),
                            L (["who"], ([],["D","K","Wh"])) ]) ]) ]) ]) ]) ]),
 
-             S (MultiSet.fromList [
+             S (fromList [
                 L (["and"], (["T","T+"],["T"])),
-                S (MultiSet.fromList [
+                S (fromList [
                   L (["Mary"], ([],["D","K"])),
-                  S (MultiSet.fromList [
+                  S (fromList [
                     L (["+s"], (["Do","K"],["T"])),
-                      S (MultiSet.fromList [
+                      S (fromList [
                         L (["Mary"], ([],["D","K"])),
-                        S (MultiSet.fromList [
+                        S (fromList [
                           L (["do"], (["V","D"],["Do"])),
-                          S (MultiSet.fromList [
+                          S (fromList [
                             L (["who"], ([],["D","K","Wh"])),
-                            S (MultiSet.fromList [
+                            S (fromList [
                               L (["ignore"], (["D","K"],["V"])),
                               L (["who"], ([],["D","K","Wh"])) ]) ]) ]) ]) ]) ]) ]) ]) ]) ])
 
@@ -549,43 +548,43 @@ ex28c = ppSO (o_svo (snd (h 0 ex28)))
 ex28d = ppSO (o_sov (snd (h 0 ex28)))
 
 ex29 =
-   S (MultiSet.fromList [
+   S (fromList [
      L ([""], (["T"],["C"])),
-     S (MultiSet.fromList [
+     S (fromList [
        L (["he"], ([],["D","K"])),
-       S (MultiSet.fromList [
+       S (fromList [
          L (["~s"], (["v","K"],["T"])),
-         S (MultiSet.fromList [
+         S (fromList [
            L (["he"], ([],["D","K"])),
-           S (MultiSet.fromList [
+           S (fromList [
              L (["+"], (["V","D"],["v"])),
-             S (MultiSet.fromList [
+             S (fromList [
                L (["know"], (["C"],["V"])),
-               S (MultiSet.fromList [
-                 S (MultiSet.fromList [
+               S (fromList [
+                 S (fromList [
                    L (["which"], (["N"],["D","K","Wh"])),
                    L (["wine"], ([],["N"])) ]),
-                 S (MultiSet.fromList [
+                 S (fromList [
                    L (["+"], (["T","Wh"],["C"])),
-                   S (MultiSet.fromList [
-                     S (MultiSet.fromList [
+                   S (fromList [
+                     S (fromList [
                        L (["the"], (["N"],["D","K"])),
                        L (["king"], ([],["N"])) ]),
-                     S (MultiSet.fromList [
+                     S (fromList [
                        L (["~s"], (["v","K"],["T"])),
-                       S (MultiSet.fromList [
-                         S (MultiSet.fromList [
+                       S (fromList [
+                         S (fromList [
                            L (["the"], (["N"],["D","K"])),
                            L (["king"], ([],["N"])) ]),
-                         S (MultiSet.fromList [
+                         S (fromList [
                            L (["+"], (["V","D"],["v"])),
-                           S (MultiSet.fromList [
-                             S (MultiSet.fromList [
+                           S (fromList [
+                             S (fromList [
                                L (["which"], (["N"],["D","K","Wh"])),
                                L (["wine"], ([],["N"])) ]),
-                             S (MultiSet.fromList [
+                             S (fromList [
                                L (["like"], (["D","K"],["V"])),
-                               S (MultiSet.fromList [
+                               S (fromList [
                                  L (["which"], (["N"],["D","K","Wh"])),
                                  L (["wine"], ([],["N"])) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ])
 ex29a = ppSO ex29

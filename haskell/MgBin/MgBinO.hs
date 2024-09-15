@@ -1,6 +1,5 @@
-module MgBinO where  -- Multiset needed. E.g., start ghci with: stack ghci multiset
-import Data.MultiSet (MultiSet)
-import qualified Data.MultiSet as MultiSet
+module MgBinO where
+import Data.MultiSet (MultiSet, fromList, toList) -- Multiset needed. E.g., start ghci with: stack ghci multiset
 import Data.List (partition)
 import MgBin
 import MgBinH
@@ -29,7 +28,7 @@ o_sov so = let (nso, pso, _, posfs, pwss) = o so in
 
 -- reveal what order depends on: (head SO, comp SO, pos head features, pos comp features, addtl pos WSs)
 o :: SO -> (SO,SO,[String],[String],[WS])
-o (S s) = let ([nws],pws:pwss) = wssNeg (map ell (MultiSet.toList s)) in
+o (S s) = let ([nws],pws:pwss) = wssNeg (map ell (toList s)) in
   let (so:sos,(f:_,_):labels) = nws in case wsPosMatch f (sos,labels) of
     (([so'],[label']), _) -> ( (head.fst) nws, (head.fst) pws, (snd.head.snd) nws, snd label' , pwss )
     _ ->                     ( (head.fst) nws, (head.fst) pws, (snd.head.snd) nws, (snd.head.snd) pws, pwss )

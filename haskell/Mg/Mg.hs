@@ -1,8 +1,7 @@
-module Mg where     -- Multiset needed. E.g., use: ghci -package multiset
-import Data.MultiSet (MultiSet)
-import qualified Data.MultiSet as MultiSet
+module Mg where
+import Data.MultiSet (MultiSet, toList, fromList)     -- Multiset needed. E.g., use: ghci -package multiset
 import Data.List (partition,foldl')
-import Data.Bifunctor
+import Data.Bifunctor (Bifunctor, bimap)
 
 type Label = ([String], [String])
 type Lex = ([String], Label)
@@ -12,7 +11,7 @@ data PhTree = Pl Lex | Ps [PhTree] deriving (Show, Eq, Ord)
 
 -- merge a sequence of SOs into one SO
 mrg :: [SO] -> SO
-mrg sos = S (MultiSet.fromList sos)
+mrg sos = S (fromList sos)
 
 -- append two pairs of lists, coordinate-wise
 (+++) :: Bifunctor bf => ([a1], [a2]) -> bf [a1] [a2] -> bf [a1] [a2]
@@ -78,4 +77,4 @@ d wss = let ((sos,labels),others) = match wss in smc (t (mrg sos:tail sos, ck la
 -- extend d (partially) through the domain of merge
 ell :: SO -> WS
 ell (L lex) = ([L lex], [snd lex])
-ell (S s) = d (map ell (MultiSet.toList s))
+ell (S s) = d (map ell (toList s))
