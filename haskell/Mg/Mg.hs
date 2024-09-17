@@ -1,7 +1,7 @@
 module Mg where
 import Data.MultiSet (MultiSet, toList, fromList)     -- Multiset needed. E.g., use: ghci -package multiset
 import Data.List (partition,foldl')
-import Data.Bifunctor (Bifunctor, bimap)
+import Data.Bifunctor (Bifunctor, bimap, first, second)
 
 type Label = ([String], [String])
 type Lex = ([String], Label)
@@ -37,7 +37,7 @@ fplus f = if last f == '+' then (init f, True) else (f, False)
 
 -- check/delete already matched features of head, complement
 ck :: [Label] -> [Label]
-ck (h:c:more) = (tail (fst h),snd h): (fst c,tail (snd c)): map (const ([],[])) more
+ck (h:c:more) = first tail h: second tail c: map (const ([],[])) more
 
 -- delete inert, trival elements of a workspace
 t :: WS -> WS

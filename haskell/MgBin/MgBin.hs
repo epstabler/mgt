@@ -1,7 +1,7 @@
 module MgBin where
 import Data.MultiSet (MultiSet, toList, fromList)     -- Multiset needed. E.g., use: ghci -package multiset
 import Data.List (partition)
-import Data.Bifunctor (Bifunctor, bimap)
+import Data.Bifunctor (Bifunctor, bimap, first, second)
 
 type Label = ([String], [String])
 type Lex = ([String], Label)
@@ -23,17 +23,17 @@ ppartition _ ([],[]) = (([],[]),([],[]))
 ppartition p (x:xs, y:ys) = let (ps,nonps) = ppartition p (xs,ys) in
   if p x y then (bimap (x:) (y:) ps, nonps) else (ps, bimap (x:) (y:) nonps)
 
--- partition sequence of WSs to separate those that have a negative element
+-- partition sequence of WSs to separate WS elements that have a negative element
 wssNeg :: [WS] -> ([WS],[WS])
 wssNeg = partition ((/= []).fst.head.snd)
 
--- partition WS elements to separate whose labels begin with positive feature f
+-- partition WS elements to separate WS elements with labels beginning with positive feature f
 wsPosMatch :: String -> WS -> (WS,WS)
 wsPosMatch f = ppartition (\_ y -> ((== f).head.snd) y)
 
 -- check/delete already matched features of head and complement
 ck :: [Label] -> [Label]
-ck [h,c] = [ ((tail.fst) h, snd h), (fst c, (tail.snd) c) ]
+ck [h,c] = [ first tail h, second tail c ]
 
 -- delete inert, trival elements of a workspace
 t :: WS -> WS
