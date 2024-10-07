@@ -1,9 +1,9 @@
 module MgTests where
-import Data.MultiSet (MultiSet, fromList, toList, elems) -- Multiset needed. E.g.: ghci -package multiset
-import Data.List (partition)
-import MgBin
-import MgBinH
-import MgBinO
+import Data.MultiSet (MultiSet, fromList, toList, elems) -- Multiset needed. E.g. use: ghci -package multiset
+import MgBin (Lex, SO(S,L,O), PhTree(Pl,Ps,Pz), WS, d, ell)
+import MgBinH (h)
+import MgBinO (o_svo, o_sov)
+import MgBinM (m)
 
 -- create lexical workspace
 lexWS :: Lex -> WS

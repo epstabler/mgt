@@ -76,5 +76,5 @@ d wss = let ((sos,labels),others) = match wss in smc (t (mrg sos:tail sos, ck la
 
 -- extend d (partially) through the domain of merge
 ell :: SO -> WS
-ell (L lex) = ([L lex], [snd lex])
+ell (L lx) = ([L lx], [snd lx])
 ell (S s) = d (map ell (toList s))

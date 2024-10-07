@@ -7,7 +7,7 @@ type Label = ([String], [String])
 type Lex = ([String], Label)
 data SO = L Lex | S (MultiSet SO) | O PhTree deriving (Show, Eq, Ord)
 type WS = ([SO],[Label])
-data PhTree = Pl Lex | Ps [PhTree] deriving (Show, Eq, Ord)
+data PhTree = Pl Lex | Ps [PhTree] | Pz deriving (Show, Eq, Ord)
 
 -- merge a sequence of SOs into one SO, one multiset
 mrg :: [SO] -> SO
@@ -61,5 +61,5 @@ d wss = let ((sos,labels),others) = match wss in smc (t (mrg sos:tail sos, ck la
 
 -- extend d (partially) through the domain of merge
 ell :: SO -> WS
-ell (L lex) = ([L lex], [snd lex])
+ell (L lx) = ([L lx], [snd lx])
 ell (S s) = d (map ell (toList s))
