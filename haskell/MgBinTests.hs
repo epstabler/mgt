@@ -116,7 +116,6 @@ ex0016 = d [lexWS (g112!!0), ex0014]  -- C Jo knows which food C[+wh] the cat li
 ex0017 = ppWS ex0016
 ex0018 = ppSO ((head.fst) ex0016)
 ex0019 = ppWS (ell ((head.fst) ex0016))
-ex0019a = ppSO (o_svo ((head.fst) ex0016))
 
 gxx :: [Lex]
 gxx = [
@@ -166,81 +165,6 @@ ex0127 = ppWS ex0126
 ex0128 = ppSO ((head.fst) ex0126)
 ex0129 = ppWS (ell ((head.fst) ex0126))
 ex0129a = ppSO (o_svo ((head.fst) ex0126))
-
--- examples from \S1.3.3 of the paper: replicating Stabler (2001: \S2.1)
-g133 :: [Lex]
-g133 = [
-    ([], ((["T"],["C"]), ("",""))),
-    ([], ((["T","Wh"],["C"]), ("",""))),
-
-    (["-s"], ((["Modal","K"],["T"]), ("",""))),
-    (["-s"], ((["Have","K"],["T"]), ("",""))),
-    (["-s"], ((["Be","K"],["T"]), ("",""))),
-    (["-s"], ((["v","K"],["T"]), ("",""))),
-
-    (["will"], ((["Have"],["Modal"]), ("",""))),
-    (["will"], ((["Be"],["Modal"]), ("",""))),
-    (["will"], ((["v"],["Modal"]), ("",""))),
-
-    (["have"], ((["Been"],["Have"]), ("",""))),
-    (["have"], ((["Ven"],["Have"]), ("",""))),
-
-    (["be"], ((["Ving"],["Be"]), ("",""))),
-    (["been"], ((["Ving"],["Been"]), ("",""))),
-
-    ([], ((["V","D"],["v"]), ("",""))),
-    (["-en"], ((["V","D"],["Ven"]), ("",""))),
-    (["-ing"], ((["V","D"],["Ving"]), ("",""))),
-
-    (["eat"], ((["D","K"],["V"]), ("",""))),
-    (["laugh"], (([],["V"]), ("",""))),
-
-    (["the"], ((["N"],["D","K"]), ("",""))),
-    (["which"], ((["N"],["D","K","Wh"]), ("",""))),
-
-    (["king"], (([],["N"]), ("",""))),
-    (["pie"], (([],["N"]), ("","")))
-    ]
-
-ex02 = ppMg g133
-
-ex0201 :: SO
-ex0201 = S (fromList [
-          S (fromList [
-            L (["which"], ((["N"],["D","K","Wh"]), ("",""))),
-            L (["pie"], (([], ["N"]), ("",""))) ]),
-          S (fromList [
-            L (["-*"], ((["T","Wh"],["C"]), ("",""))),
-            S (fromList [
-              S (fromList [
-                L (["the"], ((["N"],["D","K"]), ("",""))),
-                L (["king"], (([], ["N"]), ("",""))) ]),
-              S (fromList [
-                L (["-s"], ((["Have","K"],["T"]), ("",""))),
-                S (fromList [
-                  L (["have"], ((["Been"],["Have"]), ("",""))),
-                  S (fromList [
-                    L (["been"], ((["Ving"],["Been"]), ("",""))),
-                    S (fromList [
-                      S (fromList [
-                        L (["the"], ((["N"],["D","K"]), ("",""))),
-                        L (["king"], (([], ["N"]), ("",""))) ]),
-                      S (fromList [
-                        L (["-ing"], ((["V","D"],["Ving"]), ("",""))),
-                        S (fromList [
-                          S (fromList [
-                             L (["which"], ((["N"],["D","K","Wh"]), ("",""))),
-                             L (["pie"], (([], ["N"]), ("",""))) ]),
-                          S (fromList [
-                            L (["eat"], ((["D","K"],["V"]), ("",""))),
-                            S (fromList [
-                               L (["which"], ((["N"],["D","K","Wh"]), ("",""))),
-                               L (["pie"], (([], ["N"]), ("",""))) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ])
-
-ex0202 = ppSO ex0201
-ex0203 = ppWS (ell ex0201)
-ex0204a = ppSO (h ex0201) -- head movement
-ex0204b = ppSO (o_svo (h ex0201)) -- head movement
 
 ex0301 = S (fromList [
           S (fromList [
