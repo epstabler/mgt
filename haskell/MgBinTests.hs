@@ -18,7 +18,7 @@ tab n = do { putStr " "; tab (n-1) }
 joinstr sep = foldr (\x y -> if length y == 0 then x else (x ++ sep ++ y)) ""
 
 -- convert label to pretty string
-label2str ([],[]) = "T"
+label2str ([],[]) = "[]"
 label2str ([],p) = (joinstr "." p)
 label2str ( n,p) = (joinstr "." n) ++ " -o " ++ (joinstr "." p)
 
@@ -116,6 +116,7 @@ ex0016 = d [lexWS (g112!!0), ex0014]  -- C Jo knows which food C[+wh] the cat li
 ex0017 = ppWS ex0016
 ex0018 = ppSO ((head.fst) ex0016)
 ex0019 = ppWS (ell ((head.fst) ex0016))
+ex0019a = ppSO (o_svo ((head.fst) ex0016))
 
 gxx :: [Lex]
 gxx = [

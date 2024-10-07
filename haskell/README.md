@@ -13,6 +13,8 @@ To run some simple examples of binary merge, type:
 ```
 > ghci --package multiset
 ghci> :l MgBinTests
+ghci> ex0019
+ghci> ex0019a
 ghci> ex0302
 ghci> ex0304a
 ```
