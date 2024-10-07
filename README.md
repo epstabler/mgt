@@ -5,7 +5,7 @@ See the draft paper Stabler24-mmg.pdf. The slides present an outline and code li
 
 ** preliminary implementations, in progress **
 
-** The code in haskell/MgBin is the most stable **
+** The code in haskell is the most stable **
 
 ## haskell/
 

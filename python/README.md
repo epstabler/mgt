@@ -1,5 +1,7 @@
 # Python implementations of MG structure-defining functions
 
+-- still unstable, under development --
+
 Unlike Haskell, Python cannot have lexical items in a set if those items
 are built with lists of features. (Python lists are not hashable.) So we use tuples.
 

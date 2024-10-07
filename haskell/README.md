@@ -11,7 +11,6 @@ run with the ghcup-recommended ghci versions for some time.
 To run some simple examples of binary merge, type:
 
 ```
-> cd MgBin
 > ghci --package multiset
 ghci> :l MgBinTests
 ghci> ex0019a
