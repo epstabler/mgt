@@ -1,5 +1,7 @@
 # Haskell implementations of MG structure-defining functions
 
+-- still unstable, under development --
+
 I installed ghc with [ghcup](https://www.haskell.org/ghcup/), and then used
 [ghci 9.4.8](https://downloads.haskell.org/ghc/latest/docs/users_guide/ghci.html)
 to develop and test the code in this directory.
@@ -15,17 +17,6 @@ ghci> :l MgBinTests
 ghci> ex0019a
 ghci> ex0019b
 ghci> ex0204a
-```
-
-To run Mg with its unbounded branching:
-
-```
-> cd Mg
-> ghci --package multiset
-ghci> :l MgTests
-ghci> ex24a
-ghci> ex0204a
-ghci> ex1204a
 ```
 
 See the code and comments for many other examples.

@@ -1,13 +1,14 @@
-module MgTests where
+
+module MgBinTests where
 import Data.MultiSet (MultiSet, fromList, toList, elems) -- Multiset needed. E.g. use: ghci -package multiset
-import MgBin (Lex, SO(S,L,O), PhTree(Pl,Ps,Pz), WS, d, ell)
-import MgBinH (h)
-import MgBinO (o_svo, o_sov)
-import MgBinM (m)
+import MgBin
+import MgBinH
+import MgBinO
+import MgBinM
 
 -- create lexical workspace
 lexWS :: Lex -> WS
-lexWS lex = ([L lex], [snd lex])
+lexWS lex = ([L lex], [(fst.snd) lex])
 
 -- print n spaces
 tab 0 = putStr ""
@@ -21,16 +22,40 @@ label2str ([],[]) = "T"
 label2str ([],p) = (joinstr "." p)
 label2str ( n,p) = (joinstr "." n) ++ " -o " ++ (joinstr "." p)
 
+labelAgr2str (label,("","")) = label2str label
+labelAgr2str (label,(phi,"")) = label2str label ++ " -- " ++ phi
+labelAgr2str (label,(phi,k)) = label2str label ++ " -- " ++ phi ++ "-" ++ k
+
 -- convert lexical item to pretty string
-lex2str ([],f) = "([], " ++ (label2str f) ++ ")"
-lex2str (s,f) = "(" ++ joinstr " " s ++ ", " ++ (label2str f) ++ ")"
+lex2str ([],f) = "([], " ++ (labelAgr2str f) ++ ")"
+lex2str (s,f) = "(" ++ joinstr " " s ++ ", " ++ (labelAgr2str f) ++ ")"
 
 -- pretty print grammar
 ppMg = mapM_ (putStrLn.lex2str)
 
+-- example grammar from section 1.1.2
+g112 :: [Lex]
+g112 = [
+    ([], ((["V"],["C"]), ("",""))),                -- 0
+    ([], ((["V","Wh"],["C"]), ("",""))),           -- 1
+    (["Jo"], (([],["D"]), ("3sg",""))),            -- 2
+    (["the"], ((["N"],["D"]), ("3sg",""))),        -- 3
+    (["which"], ((["N"],["D","Wh"]), ("3",""))),   -- 4
+    (["who"], (([],["D","Wh"]), ("3sg",""))),      -- 5
+    (["cat"], (([],["N"]), ("sg",""))),            -- 6
+    (["dog"], (([],["N"]), ("sg",""))),            -- 7
+    (["food"], (([],["N"]), ("sg",""))),           -- 8
+    (["likes"], ((["D","D"],["V"]), ("3sg",""))),  -- 9
+    (["knows"], ((["C","D"],["V"]), ("3sg",""))),  -- 10
+    (["she"], (([],["D"]), ("3sg","nom"))),        -- 11
+    (["he"], (([],["D"]), ("3sg","nom")))          -- 12
+    ]
+
+ex00 = ppMg g112
+
 -- convert SO to pretty string
 so2str (S so) = "{" ++ (joinstr ", " (map so2str (elems so))) ++ "}"
-so2str (L (w,label)) = "(" ++ (joinstr " " w) ++ ", " ++ (label2str label) ++ ")"
+so2str (L (w,labelAgr)) = "(" ++ (joinstr " " w) ++ ", " ++ (labelAgr2str labelAgr) ++ ")"
 
 -- pretty print SO
 ppSO so = do { ppSO' 0 so ; putStrLn "" }
@@ -58,26 +83,9 @@ ppSOs i (x:[]) = do { ppSO' i x }
 ppSOs i (x:xs) = do { ppSO' i x ; putStrLn "," ; tab i ; ppSOs i xs }
 
 -- pretty print a workspace
+ppWS :: WS -> IO ()
 ppWS ([],[]) = putStrLn ""
 ppWS (so:sos, label:labels) = do { ppSO so ; putStrLn (label2str label); ppWS (sos,labels) }
-
--- example grammar from section 1.1.2
-g112 :: [Lex]
-g112 = [
-    ([], (["V"],["C"])),
-    ([], (["V","Wh"],["C"])),
-    (["Jo"], ([],["D"])),
-    (["the"], (["N"],["D"])),
-    (["which"], (["N"],["D","Wh"])),
-    (["who"], ([],["D","Wh"])),
-    (["cat"], ([],["N"])),
-    (["dog"], ([],["N"])),
-    (["food"], ([],["N"])),
-    (["likes"],(["D","D"],["V"])),
-    (["knows"], (["C","D"],["V"]))
-    ]
-
-ex00 = ppMg g112
 
 ex000 = d [lexWS (g112!!3), lexWS (g112!!6)]  -- the cat
 ex001 = ppWS ex000
@@ -109,16 +117,15 @@ ex0017 = ppWS ex0016
 ex0018 = ppSO ((head.fst) ex0016)
 ex0019 = ppWS (ell ((head.fst) ex0016))
 ex0019a = ppSO (o_svo ((head.fst) ex0016))
-ex0019b = ppSO (o_sov ((head.fst) ex0016))
 
 gxx :: [Lex]
 gxx = [
-    (["a"], (["A","Lf"],["C","Lf"])),       -- 0
-    (["b"], (["B","Lf"],["C","Lf"])),       -- 1
-    (["a"], (["C","Rt"],["A","Rt"])),       -- 2
-    (["b"], (["C","Rt"],["B","Rt"])),       -- 3
-    (   [], ([],["C","Rt","Lf"])),            -- 4
-    (   [], (["C","Rt","Lf"],["C"]))        -- 5
+    (["a"], ((["A","Lf"],["C","Lf"]), ("",""))),       -- 0
+    (["b"], ((["B","Lf"],["C","Lf"]), ("",""))),       -- 1
+    (["a"], ((["C","Rt"],["A","Rt"]), ("",""))),       -- 2
+    (["b"], ((["C","Rt"],["B","Rt"]), ("",""))),       -- 3
+    (   [], (([],["C","Rt","Lf"]), ("",""))),          -- 4
+    (   [], ((["C","Rt","Lf"],["C"]), ("","")))        -- 5
     ]
 
 ex01 = ppMg gxx
@@ -163,36 +170,36 @@ ex0129a = ppSO (o_svo ((head.fst) ex0126))
 -- examples from \S1.3.3 of the paper: replicating Stabler (2001: \S2.1)
 g133 :: [Lex]
 g133 = [
-    ([], (["T"],["C"])),
-    ([], (["T","Wh"],["C"])),
+    ([], ((["T"],["C"]), ("",""))),
+    ([], ((["T","Wh"],["C"]), ("",""))),
 
-    (["-s"], (["Modal","K"],["T"])),
-    (["-s"], (["Have","K"],["T"])),
-    (["-s"], (["Be","K"],["T"])),
-    (["-s"], (["v","K"],["T"])),
+    (["-s"], ((["Modal","K"],["T"]), ("",""))),
+    (["-s"], ((["Have","K"],["T"]), ("",""))),
+    (["-s"], ((["Be","K"],["T"]), ("",""))),
+    (["-s"], ((["v","K"],["T"]), ("",""))),
 
-    (["will"], (["Have"],["Modal"])),
-    (["will"], (["Be"],["Modal"])),
-    (["will"], (["v"],["Modal"])),
+    (["will"], ((["Have"],["Modal"]), ("",""))),
+    (["will"], ((["Be"],["Modal"]), ("",""))),
+    (["will"], ((["v"],["Modal"]), ("",""))),
 
-    (["have"], (["Been"],["Have"])),
-    (["have"], (["Ven"],["Have"])),
+    (["have"], ((["Been"],["Have"]), ("",""))),
+    (["have"], ((["Ven"],["Have"]), ("",""))),
 
-    (["be"], (["Ving"],["Be"])),
-    (["been"], (["Ving"],["Been"])),
+    (["be"], ((["Ving"],["Be"]), ("",""))),
+    (["been"], ((["Ving"],["Been"]), ("",""))),
 
-    ([], (["V","D"],["v"])),
-    (["-en"], (["V","D"],["Ven"])),
-    (["-ing"], (["V","D"],["Ving"])),
+    ([], ((["V","D"],["v"]), ("",""))),
+    (["-en"], ((["V","D"],["Ven"]), ("",""))),
+    (["-ing"], ((["V","D"],["Ving"]), ("",""))),
 
-    (["eat"], (["D","K"],["V"])),
-    (["laugh"], ([],["V"])),
+    (["eat"], ((["D","K"],["V"]), ("",""))),
+    (["laugh"], (([],["V"]), ("",""))),
 
-    (["the"], (["N"],["D","K"])),
-    (["which"], (["N"],["D","K","Wh"])),
+    (["the"], ((["N"],["D","K"]), ("",""))),
+    (["which"], ((["N"],["D","K","Wh"]), ("",""))),
 
-    (["king"], ([],["N"])),
-    (["pie"], ([],["N"]))
+    (["king"], (([],["N"]), ("",""))),
+    (["pie"], (([],["N"]), ("","")))
     ]
 
 ex02 = ppMg g133
@@ -200,201 +207,379 @@ ex02 = ppMg g133
 ex0201 :: SO
 ex0201 = S (fromList [
           S (fromList [
-            L (["which"], (["N"],["D","K","Wh"])),
-            L (["pie"], ([], ["N"])) ]),
+            L (["which"], ((["N"],["D","K","Wh"]), ("",""))),
+            L (["pie"], (([], ["N"]), ("",""))) ]),
           S (fromList [
-            L (["+"], (["T","Wh"],["C"])),
+            L (["-*"], ((["T","Wh"],["C"]), ("",""))),
             S (fromList [
               S (fromList [
-                L (["the"], (["N"],["D","K"])),
-                L (["king"], ([], ["N"])) ]),
+                L (["the"], ((["N"],["D","K"]), ("",""))),
+                L (["king"], (([], ["N"]), ("",""))) ]),
               S (fromList [
-                L (["+s"], (["Have","K"],["T"])),
+                L (["-s"], ((["Have","K"],["T"]), ("",""))),
                 S (fromList [
-                  L (["have"], (["Been"],["Have"])),
+                  L (["have"], ((["Been"],["Have"]), ("",""))),
                   S (fromList [
-                    L (["been"], (["Ving"],["Been"])),
+                    L (["been"], ((["Ving"],["Been"]), ("",""))),
                     S (fromList [
                       S (fromList [
-                        L (["the"], (["N"],["D","K"])),
-                        L (["king"], ([], ["N"])) ]),
+                        L (["the"], ((["N"],["D","K"]), ("",""))),
+                        L (["king"], (([], ["N"]), ("",""))) ]),
                       S (fromList [
-                        L (["+ing"], (["V","D"],["Ving"])),
+                        L (["-ing"], ((["V","D"],["Ving"]), ("",""))),
                         S (fromList [
                           S (fromList [
-                             L (["which"], (["N"],["D","K","Wh"])),
-                             L (["pie"], ([], ["N"])) ]),
+                             L (["which"], ((["N"],["D","K","Wh"]), ("",""))),
+                             L (["pie"], (([], ["N"]), ("",""))) ]),
                           S (fromList [
-                            L (["eat"], (["D","K"],["V"])),
+                            L (["eat"], ((["D","K"],["V"]), ("",""))),
                             S (fromList [
-                               L (["which"], (["N"],["D","K","Wh"])),
-                               L (["pie"], ([], ["N"])) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ])
+                               L (["which"], ((["N"],["D","K","Wh"]), ("",""))),
+                               L (["pie"], (([], ["N"]), ("",""))) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ])
 
 ex0202 = ppSO ex0201
 ex0203 = ppWS (ell ex0201)
-ex0204 = ppSO (snd (h 0 ex0201)) -- head movement
-ex0204a = ppSO (o_svo (snd (h 0 ex0201))) -- head movement
-ex0204b = ppSO (o_sov (snd (h 0 ex0201))) -- head movement
+ex0204a = ppSO (h ex0201) -- head movement
+ex0204b = ppSO (o_svo (h ex0201)) -- head movement
+
+ex0301 = S (fromList [
+          S (fromList [
+            L (["which"], ((["N"],["D","K","Wh"]), ("",""))),
+            L (["food"], (([], ["N"]), ("",""))) ]),
+          S (fromList [
+            L (["-"], ((["T","Wh"],["C"]), ("",""))),
+            S (fromList [
+              S (fromList [
+                L (["the"], ((["N"],["D","K"]), ("",""))),
+                L (["cat"], (([], ["N"]), ("",""))) ]),
+              S (fromList [
+                L (["-s"], ((["vperf","K"],["T"]), ("",""))),
+                S (fromList [
+                  L (["have"], ((["perf"],["vperf"]), ("",""))),
+                  S (fromList [
+                    L (["-en"], ((["vprog"],["perf"]), ("",""))),
+                    S (fromList [
+                      L (["be"], ((["prog"],["vprog"]), ("",""))),
+                    S (fromList [
+                      L (["-ing"], ((["v"],["prog"]), ("",""))),
+                      S (fromList [
+                        S (fromList [
+                          L (["the"], ((["N"],["D","K"]), ("",""))),
+                          L (["cat"], (([], ["N"]), ("",""))) ]),
+                        S (fromList [
+                          L (["-"], ((["V","D"],["v"]), ("",""))),
+                          S (fromList [
+                            S (fromList [
+                              L (["which"], ((["N"],["D","K","Wh"]), ("",""))),
+                              L (["food"], (([], ["N"]), ("",""))) ]),
+                            S (fromList [
+                              L (["eat"], ((["D","K"],["V"]), ("",""))),
+                              S (fromList [
+                                L (["which"], ((["N"],["D","K","Wh"]), ("",""))),
+                                L (["food"], (([], ["N"]), ("",""))) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ])
+
+ex0302 = ppSO ex0301
+ex0303 = ppWS (ell ex0301)
+ex0304 = ppSO (h ex0301) -- head movement
+ex0304a = ppSO (o_svo (h ex0301)) -- head movement
 
 -- Example of Figure 2, demonstrating multiple occurrences
 ex08 :: SO
 ex08 = S (fromList [
-        L ([], (["T"],["C"])),
+        L ([], ((["T"],["C"]), ("",""))),
         S (fromList
-         [ L (["the man"], ([],["D", "K", "Scr"])),
+         [ L (["the man"], (([],["D", "K", "Scr"]), ("",""))),
            S (fromList
-             [ L (["the man"], ([],["D", "K", "Scr"])),
+             [ L (["the man"], (([],["D", "K", "Scr"]), ("",""))),
              S (fromList
-               [ L ([], (["V", "K", "Scr"],["T"])),
+               [ L ([], ((["V", "K", "Scr"],["T"]), ("",""))),
                S (fromList
-                 [ L (["the man"], ([],["D", "K", "Scr"])),
+                 [ L (["the man"], (([],["D", "K", "Scr"]), ("",""))),
                  S (fromList [
-                   L (["carefully"], (["V","Scr"], ["V"])),
+                   L (["carefully"], ((["V","Scr"], ["V"]), ("",""))),
                    S (fromList
-                     [ L (["the man"], ([],["D", "K", "Scr"])),
+                     [ L (["the man"], (([],["D", "K", "Scr"]), ("",""))),
                      S (fromList [
-                       L (["the man"], ([],["D", "K", "Scr"])),
+                       L (["the man"], (([],["D", "K", "Scr"]), ("",""))),
                        S (fromList [
-                         L ([], (["v","K","D"], ["V"])),
+                         L ([], ((["v","K","D"], ["V"]), ("",""))),
                          S (fromList [
-                           L (["praises"], (["D"], ["v"])),
-                           L (["the man"], ([],["D", "K", "Scr"])) ]) ]) ]) ]) ]) ]) ]) ]) ]) ])
+                           L (["praises"], ((["D"], ["v"]), ("",""))),
+                           L (["the man"], (([],["D", "K", "Scr"]), ("",""))) ]) ]) ]) ]) ]) ]) ]) ]) ]) ])
 
 ex08a = ppWS (ell ex08)
 ex08b = ppSO (o_svo ex08)
-ex08c = ppSO (o_sov ex08)
 
 -- this example is from Figure 3
 ex09 :: SO
 ex09 =
  S (fromList [
-   L ([""], (["T"], ["C"])),
+   L ([""], ((["T"], ["C"]), ("",""))),
    S (fromList [
-     L (["I"], ([],["D", "K"])),
+     L (["I"], (([],["D", "K"]), ("",""))),
      S (fromList [
-       L ([""], (["V","K"], ["T"])),
+       L ([""], ((["V","K"], ["T"]), ("",""))),
        S (fromList [
-         L (["I"], ([],["D", "K"])),
+         L (["I"], (([],["D", "K"]), ("",""))),
          S (fromList [
-           L (["wonder"], (["C","D"], ["V"])),
+           L (["wonder"], ((["C","D"], ["V"]), ("",""))),
            S (fromList [
              S (fromList [
-               L ([""], (["T","Wh"], ["C"])),
+               L ([""], ((["T","Wh"], ["C"]), ("",""))),
                S (fromList [
                  S (fromList [
-                   L (["+s"], (["V","K"], ["T"])),
+                   L (["-s"], ((["V","K"], ["T"]), ("",""))),
                    S (fromList [
-                     L (["be"], (["A"], ["V"])),
+                     L (["be"], ((["A"], ["V"]), ("",""))),
                      S (fromList [
-                       L (["how"], (["A"], ["A","Wh"])),
+                       L (["how"], ((["A"], ["A","Wh"]), ("",""))),
                        S (fromList [
-                         L (["likely"], (["T"],["A"])),
+                         L (["likely"], ((["T"],["A"]), ("",""))),
                           S (fromList [
-                            L (["to"], (["V"], ["T"])),
+                            L (["to"], ((["V"], ["T"]), ("",""))),
                             S (fromList [
-                              L (["win"], (["D"], ["V"])),
-                              L (["John"], ([],["D", "K"])) ]) ]) ]) ]) ]) ]),
-               L (["John"], ([],["D", "K"])) ]) ]),
+                              L (["win"], ((["D"], ["V"]), ("",""))),
+                              L (["John"], (([],["D", "K"]), ("",""))) ]) ]) ]) ]) ]) ]),
+               L (["John"], (([],["D", "K"]), ("",""))) ]) ]),
            S (fromList [
-             L (["how"], (["A"], ["A","Wh"])),
+             L (["how"], ((["A"], ["A","Wh"]), ("",""))),
              S (fromList [
-               L (["likely"], (["T"],["A"])),
+               L (["likely"], ((["T"],["A"]), ("",""))),
                S (fromList [
-                 L (["to"], (["V"], ["T"])),
+                 L (["to"], ((["V"], ["T"]), ("",""))),
                  S (fromList [
-                   L (["win"], (["D"], ["V"])),
-                   L (["John"], ([],["D", "K"])) ]) ]) ]) ]) ]) ]) ]) ]) ]) ])
+                   L (["win"], ((["D"], ["V"]), ("",""))),
+                   L (["John"], (([],["D", "K"]), ("",""))) ]) ]) ]) ]) ]) ]) ]) ]) ]) ])
 
 ex09a = ppWS (ell ex09)
 ex09b = ppSO (o_svo ex09)
-ex09c = ppSO (o_sov ex09)
 
--- Javanese-like multiple head movement
-ex1201 :: SO
-ex1201 = S (fromList [
-           L (["++"], (["Vgelem"],["C"])),
-           S (fromList [
-             L (["Tono"], ([],["D"])),
-             S (fromList [
-               L (["want"], (["Visa","D"], ["Vgelem"])),
-               S (fromList [
-                 L (["can"], (["V"],["Visa"])),
-                 S (fromList [
-                   L (["speak"], (["D"],["V"])),
-                   L (["English"], ([],["D"])) ]) ]) ]) ]) ])
+-- examples showing effect of strong heads in a complement sequence (Z,Y,X)
+ex1101a :: SO  -- head movement: (x y z, Z)
+ex1101a = S (fromList [
+            L (["w"], ((["Z"],["W"]), ("",""))),
+            S (fromList [
+              L (["-z*"], ((["Y"],["Z"]), ("",""))),
+              S (fromList [
+                L (["-y"], ((["X"],["Y"]), ("",""))),
+                S (fromList [
+                  L (["x"], ((["V"],["X"]), ("",""))),
+                  S (fromList [
+                    L (["v"], ((["XX"],["V"]), ("",""))),
+                    L (["..."], (([],["XX"]), ("","")))
+                  ]) ]) ]) ]) ])
 
-ex1202 = ppSO ex1201
-ex1203 = ppWS (ell ex1201)
-ex1204 = ppSO (snd (h 0 ex1201)) -- head movement
-ex1204a = ppSO (o_svo (snd (h 0 ex1201))) -- head movement
-ex1204b = ppSO (o_sov (snd (h 0 ex1201))) -- head movement
+ex1101aa = ppSO ex1101a
+ex1101ab = ppWS (ell ex1101a)
+ex1101ac = ppSO (h ex1101a) -- head movement
+ex1101ad = ppSO (o_svo (h ex1101a)) -- head movement
 
--- head movement of do
-ex27 :: SO
-ex27 = S (fromList [
-         L (["who"], ([],["D","K","Wh"])),
-         S (fromList [
-           L (["+"], (["T","Wh"],["C"])),
-           S (fromList [
-             L (["Maria"], ([],["D","K"])),
-             S (fromList [
-               L (["+s"], (["Do","K"],["T"])),
-                 S (fromList [
-                   L (["Maria"], ([],["D","K"])),
-                   S (fromList [
-                     L (["do"], (["V","D"],["Do"])),
-                     S (fromList [
-                       L (["who"], ([],["D","K","Wh"])),
-                       S (fromList [
-                         L (["like"], (["D","K"],["V"])),
-                         L (["who"], ([],["D","K","Wh"])) ]) ]) ]) ]) ]) ]) ]) ])
+ex1101b :: SO  -- head movement: (x y z, Y)
+ex1101b = S (fromList [
+            L (["-z"], ((["Y"],["Z"]), ("",""))),
+            S (fromList [
+              L (["-y*"], ((["X"],["Y"]), ("",""))),
+              S (fromList [
+                L (["x"], ((["W"],["X"]), ("",""))),
+                L (["..."], (([],["W"]), ("","")))
+                ]) ]) ])
 
+ex1101ba = ppSO ex1101b
+ex1101bb = ppWS (ell ex1101b)
+ex1101bc = ppSO (h ex1101b) -- head movement
+ex1101bd = ppSO (o_svo (h ex1101b)) -- head movement
 
-ex27a = ppWS (ell ex27)
-ex27b = ppSO (o_svo ex27)
-ex27c = ppSO (o_sov ex27)
+ex1101c :: SO  -- should be the same as ex1101a: (x y z, X)
+ex1101c = S (fromList [
+            L (["-z"], ((["Y"],["Z"]), ("",""))),
+            S (fromList [
+              L (["-y"], ((["X"],["Y"]), ("",""))),
+              S (fromList [
+                L (["x*"], ((["W"],["X"]), ("",""))),
+                L (["..."], (([],["W"]), ("","")))
+                ]) ]) ])
 
+ex1101ca = ppSO ex1101c
+ex1101cb = ppWS (ell ex1101c)
+ex1101cc = ppSO (h ex1101c)
+ex1101cd = ppSO (o_svo (h ex1101c))
+
+ex1101d :: SO  -- should be the same as ex1101a: (x y z, Z)
+ex1101d = S (fromList [
+            L (["-z*"], ((["Y"],["Z"]), ("",""))),
+            S (fromList [
+              L (["-y"], ((["X"],["Y"]), ("",""))),
+              S (fromList [
+                L (["x*"], ((["W"],["X"]), ("",""))),
+                L (["..."], (([],["W"]), ("","")))
+                ]) ]) ])
+
+ex1101da = ppSO ex1101d
+ex1101db = ppWS (ell ex1101d)
+ex1101dc = ppSO (h ex1101d)
+ex1101dd = ppSO (o_svo (h ex1101d))
+
+ex1101e :: SO -- multiple head movement "tucking in", so: (z x y, X)
+ex1101e = S (fromList [
+            L (["--z*"], ((["Y"],["Z"]), ("",""))),
+            S (fromList [
+              L (["y"], ((["X"],["Y"]), ("",""))),
+              S (fromList [
+                L (["x*"], ((["W"],["X"]), ("",""))),
+                L (["..."], (([],["W"]), ("","")))
+                ]) ]) ])
+
+ex1101ea = ppSO ex1101e
+ex1101eb = ppWS (ell ex1101e)
+ex1101ec = ppSO (h ex1101e)
+ex1101ed = ppSO (o_svo (h ex1101e))
+
+--  head movement with affix hopping
 ex29 =
    S (fromList [
-     L ([""], (["T"],["C"])),
+     L ([""], ((["T"],["C"]), ("",""))),
      S (fromList [
-       L (["he"], ([],["D","K"])),
+       L (["he"], (([],["D","K"]), ("",""))),
        S (fromList [
-         L (["~s"], (["v","K"],["T"])),
+         L (["-s"], ((["v","K"],["T"]), ("",""))),
          S (fromList [
-           L (["he"], ([],["D","K"])),
+           L (["he"], (([],["D","K"]), ("",""))),
            S (fromList [
-             L (["+"], (["V","D"],["v"])),
+             L (["-"], ((["V","D"],["v"]), ("",""))),
              S (fromList [
-               L (["know"], (["C"],["V"])),
+               L (["know"], ((["C"],["V"]), ("",""))),
                S (fromList [
                  S (fromList [
-                   L (["which"], (["N"],["D","K","Wh"])),
-                   L (["wine"], ([],["N"])) ]),
+                   L (["which"], ((["N"],["D","K","Wh"]), ("",""))),
+                   L (["wine"], (([],["N"]), ("",""))) ]),
                  S (fromList [
-                   L (["+"], (["T","Wh"],["C"])),
+                   L ([""], ((["T","Wh"],["C"]), ("",""))),
                    S (fromList [
                      S (fromList [
-                       L (["the"], (["N"],["D","K"])),
-                       L (["king"], ([],["N"])) ]),
+                       L (["the"], ((["N"],["D","K"]), ("",""))),
+                       L (["king"], (([],["N"]), ("",""))) ]),
                      S (fromList [
-                       L (["~s"], (["v","K"],["T"])),
+                       L (["-s"], ((["v","K"],["T"]), ("",""))),
                        S (fromList [
                          S (fromList [
-                           L (["the"], (["N"],["D","K"])),
-                           L (["king"], ([],["N"])) ]),
+                           L (["the"], ((["N"],["D","K"]), ("",""))),
+                           L (["king"], (([],["N"]), ("",""))) ]),
                          S (fromList [
-                           L (["+"], (["V","D"],["v"])),
+                           L (["-"], ((["V","D"],["v"]), ("",""))),
                            S (fromList [
                              S (fromList [
-                               L (["which"], (["N"],["D","K","Wh"])),
-                               L (["wine"], ([],["N"])) ]),
+                               L (["which"], ((["N"],["D","K","Wh"]), ("",""))),
+                               L (["wine"], (([],["N"]), ("",""))) ]),
                              S (fromList [
-                               L (["like"], (["D","K"],["V"])),
+                               L (["like"], ((["D","K"],["V"]), ("",""))),
                                S (fromList [
-                                 L (["which"], (["N"],["D","K","Wh"])),
-                                 L (["wine"], ([],["N"])) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ])
+                                 L (["which"], ((["N"],["D","K","Wh"]), ("",""))),
+                                 L (["wine"], (([],["N"]), ("",""))) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ])
 ex29a = ppSO ex29
 ex29b = ppWS (ell ex29)
-ex29c = ppSO (o_svo (snd (h 0 ex29)))
-ex29d = ppSO (o_sov (snd (h 0 ex29)))
+ex29c = ppSO (o_svo (h ex29))
+
+ex30 =
+   S (fromList [
+     L ([""], ((["T"],["C"]), ("",""))),
+     S (fromList [
+       L (["Jo"], (([],["D","K"]), ("",""))),
+       S (fromList [
+         L (["-s"], ((["v","K"],["T"]), ("",""))),
+         S (fromList [
+           L (["Jo"], (([],["D","K"]), ("",""))),
+           S (fromList [
+             L (["-*"], ((["V","D"],["v"]), ("",""))),
+             L (["laugh"], (([],["V"]), ("",""))) ]) ]) ]) ]) ])
+
+ex30a = ppSO ex30
+ex30b = ppWS (ell ex30)
+ex30c = ppSO (o_svo (h ex30))
+
+ex12a :: SO
+ex12a =
+   S (fromList [
+     L ([""], ((["T"],["C"]), ("",""))),
+     S (fromList [
+       L (["Jo"], (([],["D","K"]), ("",""))),
+       S (fromList [
+         L (["-s"], ((["Sigma","K"],["T"]), ("",""))),
+         S (fromList [
+           L (["not"], (([],["neg"]), ("",""))),
+           S (fromList [
+             L (["-*"], ((["v","neg"],["Sigma"]), ("",""))),
+             S (fromList [
+               L (["Jo"], (([],["D","K"]), ("",""))),
+               S (fromList [
+                 L (["-"], ((["V","D"],["v"]), ("",""))),
+                 L (["laugh"], (([],["V"]), ("",""))) ]) ]) ]) ]) ]) ]) ])
+
+ex12aa = ppSO ex12a
+ex12ab = ppWS (ell ex12a)
+ex12ac = ppSO (o_svo (h ex12a))
+
+ex12b :: SO
+ex12b = S (fromList [
+         L (["who"], (([],["D","K","Wh"]), ("",""))),
+         S (fromList [
+           L (["-*"], ((["T","Wh"],["C"]), ("",""))),
+           S (fromList [
+             L (["he"], (([],["D","K"]), ("",""))),
+             S (fromList [
+               L (["-s"], ((["v","K"],["T"]), ("",""))),
+                 S (fromList [
+                   L (["he"], (([],["D","K"]), ("",""))),
+                   S (fromList [
+                     L (["-*"], ((["V","D"],["v"]), ("",""))),
+                     S (fromList [
+                       L (["who"], (([],["D","K","Wh"]), ("",""))),
+                       S (fromList [
+                         L (["see"], ((["D","K"],["V"]), ("",""))),
+                         L (["who"], (([],["D","K","Wh"]), ("",""))) ]) ]) ]) ]) ]) ]) ]) ])
+
+
+ex12ba = ppSO ex12b
+ex12bb = ppWS (ell ex12b)
+ex12bc = ppSO (o_svo (h ex12b))
+
+ex12c :: SO
+ex12c =
+   S (fromList [
+     L ([""], ((["T"],["C"]), ("",""))),
+     S (fromList [
+       L (["he"], (([],["D","K"]), ("",""))),
+       S (fromList [
+         L (["-s"], ((["Sigma","K"],["T"]), ("",""))),
+         S (fromList [
+           L (["\""], (([],["foc"]), ("",""))),
+           S (fromList [
+             L (["-"], ((["v","foc"],["Sigma"]), ("",""))),
+             S (fromList [
+               L (["he"], (([],["D","K"]), ("",""))),
+               S (fromList [
+                 L (["-*"], ((["V","D"],["v"]), ("",""))),
+                 L (["laugh"], (([],["V"]), ("",""))) ]) ]) ]) ]) ]) ]) ])
+
+ex12ca = ppSO ex12c
+ex12cb = ppWS (ell ex12c)
+ex12cc = ppSO (o_svo (h ex12c))
+
+-- Javanese-like multiple head movement
+ex1801 :: SO
+ex1801 = S (fromList [
+           L (["--"], ((["Vgelem"],["C"]), ("",""))),
+           S (fromList [
+             L (["Tono"], (([],["D"]), ("",""))),
+             S (fromList [
+               L (["want"], ((["Visa","D"], ["Vgelem"]), ("",""))),
+               S (fromList [
+                 L (["can"], ((["V"],["Visa"]), ("",""))),
+                 S (fromList [
+                   L (["speak"], ((["D"],["V"]), ("",""))),
+                   L (["English"], (([],["D"]), ("",""))) ]) ]) ]) ]) ])
+
+ex1802 = ppSO ex1801
+ex1803 = ppWS (ell ex1801)
+ex1804 = ppSO (h ex1801) -- head movement
+ex1804a = ppSO (o_svo (h ex1801)) -- head movement
+

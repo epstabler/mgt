@@ -1,11 +1,11 @@
-# mgt
-MG decomposed and reformulated with interfaces.
+# mmg
+Modular minimalist grammar
 
-The file mgtempered.pdf is a draft. Comments welcome.
-
-The slides present an outline and code listing
+See the draft paper Stabler24-mmg.pdf. The slides present an outline and code listing.
 
 ** preliminary implementations, in progress **
+
+** The code in haskell/MgBin is the most stable **
 
 ## haskell/
 
@@ -18,4 +18,3 @@ This code provides the clearest formulation of this grammar formalism.
 
 Ported from the Haskell, a Python 3.x implementation of merge, *-merge, labeling, interfaces.
 
-THE PYTHON CODE HAS NOT YET CAUGHT UP WITH THE HASKELL

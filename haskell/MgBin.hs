@@ -3,8 +3,9 @@ import Data.MultiSet (MultiSet, toList, fromList)     -- Multiset needed. E.g., 
 import Data.List (partition)
 import Data.Bifunctor (Bifunctor, bimap, first, second)
 
-type Label = ([String], [String])
-type Lex = ([String], Label)
+type Label = ([String], [String])  -- (neg features, pos features)
+type Agr = (String, String)        -- (phi, case)
+type Lex = ([String], (Label, Agr))
 data SO = L Lex | S (MultiSet SO) | O PhTree deriving (Show, Eq, Ord)
 type WS = ([SO],[Label])
 data PhTree = Pl Lex | Ps [PhTree] | Pz deriving (Show, Eq, Ord)
@@ -61,5 +62,6 @@ d wss = let ((sos,labels),others) = match wss in smc (t (mrg sos:tail sos, ck la
 
 -- extend d (partially) through the domain of merge
 ell :: SO -> WS
-ell (L lx) = ([L lx], [snd lx])
+ell (L lx) = ([L lx], [(fst.snd) lx])
 ell (S s) = d (map ell (toList s))
+
