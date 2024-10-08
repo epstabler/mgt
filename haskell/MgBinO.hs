@@ -4,16 +4,15 @@ import MgBin (SO(S,L,O), PhTree(Pl,Ps), WS, ell, wssNeg, wsPosMatch)
 
 o_svo :: SO -> SO
 o_svo (O t) = O t
-o_svo (L (w,l)) = O (Pl (w,l))
-o_svo so = let (nso, pso, _, posfs) = o so in case (o_svo nso, o_svo pso, posfs) of
-               (O (Pl i),O t,_:_:_) -> O (Ps [Pl i, Pl ([],(([],[]), ("","")))])   -- t 1st merge, moving
-               (O (Pl i),O t,_) -> O (Ps [Pl i,t])                                 -- t 1st merge
-               (O t,O t',_:_:_) -> O (Ps [Pl ([],(([],[]), ("",""))), t])          -- t' non-1st merge, moving
-               (O t,O t',_) -> O (Ps [t',t])                                       -- t' non-1st merge
-
-
-o :: SO -> (SO,SO,[String],[String]) -- expose (head SO, comp SO, pos head features, pos comp features)
-o (S s) = let ([nws],[pws]) = wssNeg (map ell (toList s)) in
-  let (so:sos,(f:_,_):labels) = nws in case wsPosMatch f (sos,labels) of
-    (([so'],[label']), _) -> ( (head.fst) nws, (head.fst) pws, (snd.head.snd) nws, snd label' )
-    _ ->                     ( (head.fst) nws, (head.fst) pws, (snd.head.snd) nws, (snd.head.snd) pws )
+o_svo (L lex) = O (Pl lex)
+o_svo (S s) = let ([(nso:nsos,nlabel:nlabels)],poswss) = wssNeg (map ell (toList s)) in
+              let f = (head.fst) nlabel in case (wsPosMatch f (nsos,nlabels), poswss) of
+               ((([pso],[plabel]), _), _) ->  formatPhTree (length (snd plabel)) nso pso -- IM
+               ((([],[]), _), [ws]) -> case wsPosMatch f ws of
+                 (([pso],[plabel]), _) -> formatPhTree (length (snd plabel)) nso pso -- EM
+  where
+    formatPhTree :: Int -> SO -> SO -> SO
+    formatPhTree noOfPsoPosFeats nso pso = case (noOfPsoPosFeats, nso, o_svo nso, o_svo pso) of
+      (1, L _, O pht, O pht') -> O (Ps [pht, pht']) -- first merge, nonmoving complement
+      (1, S _, O pht, O pht') -> O (Ps [pht', pht]) -- nonfirst merge, nonmoving complement
+      (_,   _, O pht, _) -> O pht                   -- moving complement

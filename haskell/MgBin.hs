@@ -64,4 +64,3 @@ d wss = let ((sos,labels),others) = match wss in smc (t (mrg sos:tail sos, ck la
 ell :: SO -> WS
 ell (L lx) = ([L lx], [(fst.snd) lx])
 ell (S s) = d (map ell (toList s))
-
