@@ -3,7 +3,6 @@ import Data.MultiSet (MultiSet, toList) -- Multiset needed. E.g. use: start ghci
 import MgBin (SO(S,L,O), PhTree(Pl,Ps), WS, ell, wssNeg, wsPosMatch)
 
 o_svo :: SO -> SO
-o_svo (O t) = O t
 o_svo (L lex) = O (Pl lex)
 o_svo (S s) = let ([(nso:nsos,nlabel:nlabels)],poswss) = wssNeg (map ell (toList s)) in
               let f = (head.fst) nlabel in case (wsPosMatch f (nsos,nlabels), poswss) of
