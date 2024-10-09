@@ -33,9 +33,9 @@ lex2str (s,f) = "(" ++ joinstr " " s ++ ", " ++ (labelAgr2str f) ++ ")"
 -- pretty print grammar
 ppMg = mapM_ (putStrLn.lex2str)
 
--- example grammar from section 1.1.2
-g112 :: [Lex]
-g112 = [
+-- example grammar (1) from section 1.1.2
+g1 :: [Lex]
+g1 = [
     ([], ((["V"],["C"]), ("",""))),                -- 0
     ([], ((["V","Wh"],["C"]), ("",""))),           -- 1
     (["Jo"], (([],["D"]), ("3sg",""))),            -- 2
@@ -51,7 +51,7 @@ g112 = [
     (["he"], (([],["D"]), ("3sg","nom")))          -- 12
     ]
 
-ex00 = ppMg g112
+ex00 = ppMg g1
 
 -- convert SO to pretty string
 so2str (S so) = "{" ++ (joinstr ", " (map so2str (elems so))) ++ "}"
@@ -87,36 +87,37 @@ ppWS :: WS -> IO ()
 ppWS ([],[]) = putStrLn ""
 ppWS (so:sos, label:labels) = do { ppSO so ; putStrLn (label2str label); ppWS (sos,labels) }
 
-ex000 = d [lexWS (g112!!3), lexWS (g112!!6)]  -- the cat
-ex001 = ppWS ex000
 
-ex002 = d [lexWS (g112!!4), lexWS (g112!!8)]  -- which food
-ex003 = ppWS ex002
+fig1a00 = d [lexWS (g1!!3), lexWS (g1!!6)]  -- the cat
+fig1a00ws = ppWS fig1a00
 
-ex004 = d [lexWS (g112!!9), ex002] -- likes which food
-ex005 = ppWS ex004
+fig1a01 = d [lexWS (g1!!4), lexWS (g1!!8)]  -- which food
+fig1a01ws = ppWS fig1a01
 
-ex006 = d [ex004, ex000]  -- the cat likes which food
-ex007 = ppWS ex006
+fig1a02 = d [lexWS (g1!!9), fig1a01] -- likes which food
+fig1a02ws = ppWS fig1a02
 
-ex008 = d [ex006, lexWS (g112!!1)]  -- C[+wh] the cat likes which food
-ex009 = ppWS ex008
+fig1a03 = d [fig1a02, fig1a00]  -- the cat likes which food
+fig1a03ws = ppWS fig1a03
 
-ex0010 = d [ex008, ex002]  -- which food C[+wh] the cat likes which food
-ex0011 = ppWS ex0010
+fig1a04 = d [fig1a03, lexWS (g1!!1)]  -- C[+wh] the cat likes which food
+fig1a04ws = ppWS fig1a04
 
-ex0012 = d [lexWS (g112!!10), ex0010]  -- knows which food C[+wh] the cat likes which food
-ex0013 = ppWS ex0012
+fig1a05 = d [fig1a04, fig1a01]  -- which food C[+wh] the cat likes which food
+fig1a05ws = ppWS fig1a05
 
-ex0014 = d [ex0012, lexWS (g112!!2)]  -- Jo knows which food C[+wh] the cat likes which food
-ex0015 = ppWS ex0014
+fig1a06 = d [lexWS (g1!!10), fig1a05]  -- knows which food C[+wh] the cat likes which food
+fig1a06ws = ppWS fig1a06
+
+fig1a07 = d [fig1a06, lexWS (g1!!2)]  -- Jo knows which food C[+wh] the cat likes which food
+fig1a07ws = ppWS fig1a07
 
 -- This is the example in Figure 1, with wh movement
-ex0016 = d [lexWS (g112!!0), ex0014]  -- C Jo knows which food C[+wh] the cat likes which food
-ex0017 = ppWS ex0016
-ex0018 = ppSO ((head.fst) ex0016)
-ex0019 = ppWS (ell ((head.fst) ex0016))
-ex0019a = ppSO (o_svo ((head.fst) ex0016))
+fig1a08 = d [lexWS (g1!!0), fig1a07]  -- C Jo knows which food C[+wh] the cat likes which food
+fig1a08ws = ppWS fig1a08
+fig1a = ppSO ((head.fst) fig1a08)
+fig1aEll = ppWS (ell ((head.fst) fig1a08))
+fig1aO = ppSO (o_svo ((head.fst) fig1a08))
 
 gxx :: [Lex]
 gxx = [
@@ -167,7 +168,25 @@ ex0128 = ppSO ((head.fst) ex0126)
 ex0129 = ppWS (ell ((head.fst) ex0126))
 ex0129a = ppSO (o_svo ((head.fst) ex0126))
 
-ex0301 = S (fromList [
+-- Figure 2: Head movements (raising and lowering at once)
+fig2a =
+   S (fromList [
+     L ([""], ((["T"],["C"]), ("",""))),
+     S (fromList [
+       L (["Jo"], (([],["D","K"]), ("",""))),
+       S (fromList [
+         L (["-s"], ((["v","K"],["T"]), ("",""))),
+         S (fromList [
+           L (["Jo"], (([],["D","K"]), ("",""))),
+           S (fromList [
+             L (["-*"], ((["V","D"],["v"]), ("",""))),
+             L (["laugh"], (([],["V"]), ("",""))) ]) ]) ]) ]) ])
+
+fig2aSO = ppSO fig2a
+fig2aEll = ppWS (ell fig2a)
+fig2aOH = ppSO (o_svo (h fig2a))
+
+fig2bSO = S (fromList [
           S (fromList [
             L (["which"], ((["N"],["D","K","Wh"]), ("",""))),
             L (["food"], (([], ["N"]), ("",""))) ]),
@@ -203,14 +222,13 @@ ex0301 = S (fromList [
                                 L (["which"], ((["N"],["D","K","Wh"]), ("",""))),
                                 L (["food"], (([], ["N"]), ("",""))) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ])
 
-ex0302 = ppSO ex0301
-ex0303 = ppWS (ell ex0301)
-ex0304 = ppSO (h ex0301) -- head movement
-ex0304a = ppSO (o_svo (h ex0301)) -- head movement
+fig2bEll = ppWS (ell fig2bSO)
+fig2bH = ppSO (h fig2bSO) -- head movement
+fig2bOH = ppSO (o_svo (h fig2bSO)) -- head movement
 
--- Example of Figure 2, demonstrating multiple occurrences
-ex08 :: SO
-ex08 = S (fromList [
+-- Figure 6 demonstrating multiple occurrences
+fig6so :: SO
+fig6so = S (fromList [
         L ([], ((["T"],["C"]), ("",""))),
         S (fromList
          [ L (["the man"], (([],["D", "K", "Scr"]), ("",""))),
@@ -232,12 +250,12 @@ ex08 = S (fromList [
                            L (["praises"], ((["D"], ["v"]), ("",""))),
                            L (["the man"], (([],["D", "K", "Scr"]), ("",""))) ]) ]) ]) ]) ]) ]) ]) ]) ]) ])
 
-ex08a = ppWS (ell ex08)
-ex08b = ppSO (o_svo ex08)
+fig6ws = ppWS (ell fig6so)
+fig6O = ppSO (o_svo fig6so)
 
--- this example is from Figure 3
-ex09 :: SO
-ex09 =
+-- Figure 7
+fig7so :: SO
+fig7so =
  S (fromList [
    L ([""], ((["T"], ["C"]), ("",""))),
    S (fromList [
@@ -276,12 +294,12 @@ ex09 =
                    L (["win"], ((["D"], ["V"]), ("",""))),
                    L (["John"], (([],["D", "K"]), ("",""))) ]) ]) ]) ]) ]) ]) ]) ]) ]) ])
 
-ex09a = ppWS (ell ex09)
-ex09b = ppSO (o_svo ex09)
+fig7ws = ppWS (ell fig7so)
+fig7O = ppSO (o_svo fig7so)
 
--- examples showing effect of strong heads in a complement sequence (Z,Y,X)
-ex1101a :: SO  -- head movement: (x y z, Z)
-ex1101a = S (fromList [
+-- examples (11a,b,c) showing effect of strong heads in a complement sequence (Z,Y,X)
+ex11a :: SO  -- head movement: (x y z, Z)
+ex11a = S (fromList [
             L (["w"], ((["Z"],["W"]), ("",""))),
             S (fromList [
               L (["-z*"], ((["Y"],["Z"]), ("",""))),
@@ -294,13 +312,13 @@ ex1101a = S (fromList [
                     L (["..."], (([],["XX"]), ("","")))
                   ]) ]) ]) ]) ])
 
-ex1101aa = ppSO ex1101a
-ex1101ab = ppWS (ell ex1101a)
-ex1101ac = ppSO (h ex1101a) -- head movement
-ex1101ad = ppSO (o_svo (h ex1101a)) -- head movement
+ex11aSO = ppSO ex11a
+ex11aEll = ppWS (ell ex11a)
+ex11aH = ppSO (h ex11a) -- head movement
+ex11aO = ppSO (o_svo (h ex11a)) -- head movement
 
-ex1101b :: SO  -- head movement: (x y z, Y)
-ex1101b = S (fromList [
+ex11b :: SO  -- head movement: (x y z, Y)
+ex11b = S (fromList [
             L (["-z"], ((["Y"],["Z"]), ("",""))),
             S (fromList [
               L (["-y*"], ((["X"],["Y"]), ("",""))),
@@ -309,13 +327,13 @@ ex1101b = S (fromList [
                 L (["..."], (([],["W"]), ("","")))
                 ]) ]) ])
 
-ex1101ba = ppSO ex1101b
-ex1101bb = ppWS (ell ex1101b)
-ex1101bc = ppSO (h ex1101b) -- head movement
-ex1101bd = ppSO (o_svo (h ex1101b)) -- head movement
+ex11bSO = ppSO ex11b
+ex11bEll = ppWS (ell ex11b)
+ex11bH = ppSO (h ex11b) -- head movement
+ex11bOH = ppSO (o_svo (h ex11b)) -- head movement
 
-ex1101c :: SO  -- should be the same as ex1101a: (x y z, X)
-ex1101c = S (fromList [
+ex11c :: SO
+ex11c = S (fromList [
             L (["-z"], ((["Y"],["Z"]), ("",""))),
             S (fromList [
               L (["-y"], ((["X"],["Y"]), ("",""))),
@@ -324,13 +342,13 @@ ex1101c = S (fromList [
                 L (["..."], (([],["W"]), ("","")))
                 ]) ]) ])
 
-ex1101ca = ppSO ex1101c
-ex1101cb = ppWS (ell ex1101c)
-ex1101cc = ppSO (h ex1101c)
-ex1101cd = ppSO (o_svo (h ex1101c))
+ex11cSO = ppSO ex11c
+ex11cEll = ppWS (ell ex11c)
+ex11cH = ppSO (h ex11c)
+ex11cOH = ppSO (o_svo (h ex11c))
 
-ex1101d :: SO  -- should be the same as ex1101a: (x y z, Z)
-ex1101d = S (fromList [
+ex11x :: SO  -- should be the same as ex11aSO: (x y z, Z)
+ex11x = S (fromList [
             L (["-z*"], ((["Y"],["Z"]), ("",""))),
             S (fromList [
               L (["-y"], ((["X"],["Y"]), ("",""))),
@@ -339,28 +357,13 @@ ex1101d = S (fromList [
                 L (["..."], (([],["W"]), ("","")))
                 ]) ]) ])
 
-ex1101da = ppSO ex1101d
-ex1101db = ppWS (ell ex1101d)
-ex1101dc = ppSO (h ex1101d)
-ex1101dd = ppSO (o_svo (h ex1101d))
+ex11xSO = ppSO ex11d
+ex11xEll = ppWS (ell ex11d)
+ex11xH = ppSO (h ex11d)
+ex11xOH = ppSO (o_svo (h ex11d))
 
-ex1101e :: SO -- multiple head movement "tucking in", so: (z x y, X)
-ex1101e = S (fromList [
-            L (["--z*"], ((["Y"],["Z"]), ("",""))),
-            S (fromList [
-              L (["y"], ((["X"],["Y"]), ("",""))),
-              S (fromList [
-                L (["x*"], ((["W"],["X"]), ("",""))),
-                L (["..."], (([],["W"]), ("","")))
-                ]) ]) ])
-
-ex1101ea = ppSO ex1101e
-ex1101eb = ppWS (ell ex1101e)
-ex1101ec = ppSO (h ex1101e)
-ex1101ed = ppSO (o_svo (h ex1101e))
-
---  head movement with affix hopping
-ex29 =
+--  fig1 but with separate affixes and affix hopping
+fig1x =
    S (fromList [
      L ([""], ((["T"],["C"]), ("",""))),
      S (fromList [
@@ -400,27 +403,11 @@ ex29 =
                                S (fromList [
                                  L (["which"], ((["N"],["D","K","Wh"]), ("",""))),
                                  L (["wine"], (([],["N"]), ("",""))) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ])
-ex29a = ppSO ex29
-ex29b = ppWS (ell ex29)
-ex29c = ppSO (o_svo (h ex29))
+fig1xSO = ppSO fig1x
+fig1xEll = ppWS (ell fig1x)
+fig1xOH = ppSO (o_svo (h fig1x))
 
-ex30 =
-   S (fromList [
-     L ([""], ((["T"],["C"]), ("",""))),
-     S (fromList [
-       L (["Jo"], (([],["D","K"]), ("",""))),
-       S (fromList [
-         L (["-s"], ((["v","K"],["T"]), ("",""))),
-         S (fromList [
-           L (["Jo"], (([],["D","K"]), ("",""))),
-           S (fromList [
-             L (["-*"], ((["V","D"],["v"]), ("",""))),
-             L (["laugh"], (([],["V"]), ("",""))) ]) ]) ]) ]) ])
-
-ex30a = ppSO ex30
-ex30b = ppWS (ell ex30)
-ex30c = ppSO (o_svo (h ex30))
-
+-- Figure 3
 ex12a :: SO
 ex12a =
    S (fromList [
@@ -439,9 +426,9 @@ ex12a =
                  L (["-*"], ((["V","D"],["v"]), ("",""))),
                  L (["laugh"], (([],["V"]), ("",""))) ]) ]) ]) ]) ]) ]) ])
 
-ex12aa = ppSO ex12a
-ex12ab = ppWS (ell ex12a)
-ex12ac = ppSO (o_svo (h ex12a))
+ex12SO = ppSO ex12a
+ex12Ell = ppWS (ell ex12a)
+ex12aOH = ppSO (o_svo (h ex12a))
 
 ex12b :: SO
 ex12b = S (fromList [
@@ -463,9 +450,9 @@ ex12b = S (fromList [
                          L (["who"], (([],["D","K","Wh"]), ("",""))) ]) ]) ]) ]) ]) ]) ]) ])
 
 
-ex12ba = ppSO ex12b
-ex12bb = ppWS (ell ex12b)
-ex12bc = ppSO (o_svo (h ex12b))
+ex12bSO = ppSO ex12b
+ex12bEll = ppWS (ell ex12b)
+ex12bOH = ppSO (o_svo (h ex12b))
 
 ex12c :: SO
 ex12c =
@@ -485,26 +472,44 @@ ex12c =
                  L (["-*"], ((["V","D"],["v"]), ("",""))),
                  L (["laugh"], (([],["V"]), ("",""))) ]) ]) ]) ]) ]) ]) ])
 
-ex12ca = ppSO ex12c
-ex12cb = ppWS (ell ex12c)
-ex12cc = ppSO (o_svo (h ex12c))
+ex12cSO = ppSO ex12c
+ex12cEll = ppWS (ell ex12c)
+ex12cOH = ppSO (o_svo (h ex12c))
 
 -- Javanese-like multiple head movement
-ex1801 :: SO
-ex1801 = S (fromList [
-           L (["--"], ((["Vgelem"],["C"]), ("",""))),
+ex11d :: SO
+ex11d = S (fromList [
+            L (["--z*"], ((["Y"],["Z"]), ("",""))),
+            S (fromList [
+              L (["y"], ((["X"],["Y"]), ("",""))),
+              S (fromList [
+                L (["x*"], ((["W"],["X"]), ("",""))),
+                L (["..."], (([],["W"]), ("","")))
+                ]) ]) ])
+
+ex11dSO = ppSO ex11d
+ex11dEll = ppWS (ell ex11d)
+ex11dH = ppSO (hjava ex11d)
+ex11dOH = ppSO (o_svo (hjava ex11d))
+
+fig4 :: SO
+fig4 = S (fromList [
+           L (["---*"], ((["T"],["C"]), ("",""))),
            S (fromList [
-             L (["Tono"], (([],["D"]), ("",""))),
+             L (["Tono"], (([],["D","K"]), ("",""))),
              S (fromList [
-               L (["want"], ((["Visa","D"], ["Vgelem"]), ("",""))),
-               S (fromList [
-                 L (["can"], ((["V"],["Visa"]), ("",""))),
+               L (["-"], ((["Aux","K"],["T"]), ("",""))),
                  S (fromList [
-                   L (["speak"], ((["D"],["V"]), ("",""))),
-                   L (["English"], (([],["D"]), ("",""))) ]) ]) ]) ]) ])
+                 L (["-want"], ((["v"], ["Aux"]), ("",""))),
+                   S (fromList [
+                     L (["Tono"], (([],["D","K"]), ("",""))),
+                     S (fromList [
+                       L (["can"], ((["V","D"],["v"]), ("",""))),
+                       S (fromList [
+                         L (["speak"], ((["D"],["V"]), ("",""))),
+                         L (["English"], (([],["D"]), ("",""))) ]) ]) ]) ]) ]) ]) ])
 
-ex1802 = ppSO ex1801
-ex1803 = ppWS (ell ex1801)
-ex1804 = ppSO (h ex1801) -- head movement
-ex1804a = ppSO (o_svo (h ex1801)) -- head movement
-
+fig4SO = ppSO fig4
+fig4Ell = ppWS (ell fig4)
+fig4H = ppSO (hjava fig4) -- head movement
+fig4OH = ppSO (o_svo (hjava fig4)) -- head movement
