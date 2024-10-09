@@ -315,7 +315,7 @@ ex11a = S (fromList [
 ex11aSO = ppSO ex11a
 ex11aEll = ppWS (ell ex11a)
 ex11aH = ppSO (h ex11a) -- head movement
-ex11aO = ppSO (o_svo (h ex11a)) -- head movement
+ex11aOH = ppSO (o_svo (h ex11a)) -- head movement
 
 ex11b :: SO  -- head movement: (x y z, Y)
 ex11b = S (fromList [
