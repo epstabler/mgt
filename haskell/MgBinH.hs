@@ -36,12 +36,10 @@ heng so = case h' 0 False False [] so of { (_, [], so') -> so' } where
                    then let (br, hs',pso) = h' i'' strong False w' ((head.fst) pws) in
                      if br
                      then (br, ["DO"] ++ hs, S (fromList (L (hs' , fs) : pso : [])))
-                     else 
-                       if strong && not hiStrong
-                       then (br, [], S (fromList (L (hs' ++ hs , fs) : pso : [])))
-                       else (br, hs' ++ hs , S (fromList (L ([], fs) : pso : [])))
-                  else
-                    let (br, hs',pso) = h' i'' (max strong hiStrong) sp (w' ++ hs) ((head.fst) pws) in
+                     else if strong && not hiStrong
+                          then (br, [], S (fromList (L (hs' ++ hs , fs) : pso : [])))
+                          else (br, hs' ++ hs , S (fromList (L ([], fs) : pso : [])))
+                  else let (br, hs',pso) = h' i'' (max strong hiStrong) sp (w' ++ hs) ((head.fst) pws) in
                       if strong && not hiStrong
                       then (br, [], S (fromList (L (hs', fs) : pso : [])))
                       else (br, hs', S (fromList (L ([], fs) : pso : [])))
