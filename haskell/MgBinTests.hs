@@ -184,7 +184,7 @@ fig2a =
 
 fig2aSO = ppSO fig2a
 fig2aEll = ppWS (ell fig2a)
-fig2aOH = ppSO (o_svo (h fig2a))
+fig2aOH = ppSO (o_svo (heng fig2a))
 
 fig2bSO = S (fromList [
           S (fromList [
@@ -223,8 +223,8 @@ fig2bSO = S (fromList [
                                 L (["food"], (([], ["N"]), ("",""))) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ])
 
 fig2bEll = ppWS (ell fig2bSO)
-fig2bH = ppSO (h fig2bSO) -- head movement
-fig2bOH = ppSO (o_svo (h fig2bSO)) -- head movement
+fig2bH = ppSO (heng fig2bSO) -- head movement
+fig2bOH = ppSO (o_svo (heng fig2bSO)) -- head movement
 
 -- Figure 6 demonstrating multiple occurrences
 fig6so :: SO
@@ -314,8 +314,8 @@ ex11a = S (fromList [
 
 ex11aSO = ppSO ex11a
 ex11aEll = ppWS (ell ex11a)
-ex11aH = ppSO (h ex11a) -- head movement
-ex11aOH = ppSO (o_svo (h ex11a)) -- head movement
+ex11aH = ppSO (heng ex11a) -- head movement
+ex11aOH = ppSO (o_svo (heng ex11a)) -- head movement
 
 ex11b :: SO  -- head movement: (x y z, Y)
 ex11b = S (fromList [
@@ -329,8 +329,8 @@ ex11b = S (fromList [
 
 ex11bSO = ppSO ex11b
 ex11bEll = ppWS (ell ex11b)
-ex11bH = ppSO (h ex11b) -- head movement
-ex11bOH = ppSO (o_svo (h ex11b)) -- head movement
+ex11bH = ppSO (heng ex11b) -- head movement
+ex11bOH = ppSO (o_svo (heng ex11b)) -- head movement
 
 ex11c :: SO
 ex11c = S (fromList [
@@ -344,8 +344,8 @@ ex11c = S (fromList [
 
 ex11cSO = ppSO ex11c
 ex11cEll = ppWS (ell ex11c)
-ex11cH = ppSO (h ex11c)
-ex11cOH = ppSO (o_svo (h ex11c))
+ex11cH = ppSO (heng ex11c)
+ex11cOH = ppSO (o_svo (heng ex11c))
 
 ex11x :: SO  -- should be the same as ex11aSO: (x y z, Z)
 ex11x = S (fromList [
@@ -357,10 +357,10 @@ ex11x = S (fromList [
                 L (["..."], (([],["W"]), ("","")))
                 ]) ]) ])
 
-ex11xSO = ppSO ex11d
-ex11xEll = ppWS (ell ex11d)
-ex11xH = ppSO (h ex11d)
-ex11xOH = ppSO (o_svo (h ex11d))
+ex11xSO = ppSO ex11x
+ex11xEll = ppWS (ell ex11x)
+ex11xH = ppSO (heng ex11x)
+ex11xOH = ppSO (o_svo (heng ex11x))
 
 --  fig1 but with separate affixes and affix hopping
 fig1x =
@@ -405,7 +405,7 @@ fig1x =
                                  L (["wine"], (([],["N"]), ("",""))) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ])
 fig1xSO = ppSO fig1x
 fig1xEll = ppWS (ell fig1x)
-fig1xOH = ppSO (o_svo (h fig1x))
+fig1xOH = ppSO (o_svo (heng fig1x))
 
 -- Figure 3
 ex12a :: SO
@@ -428,7 +428,7 @@ ex12a =
 
 ex12SO = ppSO ex12a
 ex12Ell = ppWS (ell ex12a)
-ex12aOH = ppSO (o_svo (h ex12a))
+ex12aOH = ppSO (o_svo (heng ex12a))
 
 ex12b :: SO
 ex12b = S (fromList [
@@ -452,7 +452,7 @@ ex12b = S (fromList [
 
 ex12bSO = ppSO ex12b
 ex12bEll = ppWS (ell ex12b)
-ex12bOH = ppSO (o_svo (h ex12b))
+ex12bOH = ppSO (o_svo (heng ex12b))
 
 ex12c :: SO
 ex12c =
@@ -474,9 +474,9 @@ ex12c =
 
 ex12cSO = ppSO ex12c
 ex12cEll = ppWS (ell ex12c)
-ex12cOH = ppSO (o_svo (h ex12c))
+ex12cOH = ppSO (o_svo (heng ex12c))
 
--- Javanese-like multiple head movement
+-- Javanese-like multiple head movement: z y x
 ex11d :: SO
 ex11d = S (fromList [
             L (["--z*"], ((["Y"],["Z"]), ("",""))),
@@ -498,9 +498,9 @@ fig4 = S (fromList [
            S (fromList [
              L (["Tono"], (([],["D","K"]), ("",""))),
              S (fromList [
-               L (["-"], ((["Aux","K"],["T"]), ("",""))),
+               L ([""], ((["Aux","K"],["T"]), ("",""))),
                  S (fromList [
-                 L (["-want"], ((["v"], ["Aux"]), ("",""))),
+                 L (["want"], ((["v"], ["Aux"]), ("",""))),
                    S (fromList [
                      L (["Tono"], (([],["D","K"]), ("",""))),
                      S (fromList [

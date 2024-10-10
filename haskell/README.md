@@ -18,7 +18,7 @@ ghci> fig1aO
 ghci> fig2a
 ghci> fig2aEll
 ghci> fig2aOH
-ghci> fig2bEll
+ghci> fig2bOH
 ghci> fig1xOH
 ghci> fig4OH
 ```
