@@ -16,15 +16,11 @@ heng so = case h' 0 False False [] so of { (_, [], so') -> so' } where
   --   returns (VatBot?, heads from below, so)
   h' :: Int -> Bool -> Bool -> [String] -> SO -> (Bool, [String], SO)
   h' 0 _ _ [] (L lex) = (False, [], L lex)
-  h' 1 hiStrong sp hs (L (w,fs)) =
-    let (i',isStrong,w') = hfeats w in
-    let cat = (head.snd.fst) fs in  -- chain ends
-      if isStrong && not hiStrong then (cat == "V", [], L(w'++hs,fs)) else (cat == "V", w'++hs, L([],fs))
+  h' 1 hiStrong sp hs (L (w,fs)) = let (i',isStrong,w') = hfeats w in let cat = (head.snd.fst) fs in  -- chain ends
+    if isStrong && not hiStrong then (cat == "V", [], L(w'++hs,fs)) else (cat == "V", w'++hs, L([],fs))
   h' i hiStrong sp hs (S s) =
     let ([nws],pws:pwss) = wssNeg (map ell (toList s)) in case (head.fst) nws of
-      L (w,fs) ->
-        let cat = (head.snd.fst) fs in
-        let (i',strong,w') = hfeats w in
+      L (w,fs) -> let cat = (head.snd.fst) fs in let (i',strong,w') = hfeats w in
         let i'' = i' + max 0 (i-1) in case (i,i'') of
           (0,0) -> case h' 0 False False [] ((head.fst) pws) of                  -- no chain
             { (br, [], pso) -> (br, [], S (fromList (L (w, fs) : pso : []))) }
