@@ -6,8 +6,7 @@ import Data.Bifunctor (first)
 hfeats :: [String] -> (Int, Bool, [String]) -- returns (noOfProbes, strong?, head without feats)
 hfeats [] = (0, False, [])
 hfeats (s:ss) = let (i,s') = deps s in if length s' > 0 && [last s'] == "*" then (i,True,init s':ss) else (i,False,s':ss)
-  where deps ('-':s') = first (1+) (deps s')
-        deps s = (0, s)
+  where deps s = case s of {('-':s') -> first (1+) (deps s') ; _ -> (0,s)}
 
 heng :: SO -> SO -- h' (noOfHeadsNeededAbove,strong?,split?,headsFromAbove) = (break?,headsFromBelow,so)
 heng so = case h' 0 False False [] so of { (_, [], so') -> so' } where
@@ -44,6 +43,7 @@ heng so = case h' 0 False False [] so of { (_, [], so') -> so' } where
                (br, hs', S (fromList (nso' : psos)))
         else let (br,hs',nso') = h' i hiStrong sp hs nso in let psos = map (head.fst) (pws:pwss) in
                (br, hs', S (fromList (nso' : psos)))
+
 nonMovingPso nws pws = let (nso:nsos,nlabel:nlabels) = nws in
   let f = (head.fst) nlabel in case wsPosMatch f (nsos,nlabels) of
     (([pso],[plabel]), _) -> if (length (snd plabel)) > 1 then False else True
