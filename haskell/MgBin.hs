@@ -46,8 +46,8 @@ match wss = let ([(so:sos,label:labels)],poswss) = wssNeg wss in
   let f = (head.fst) label in case (wsPosMatch f (sos,labels), poswss) of
       ((([so'],[label']), imOthers), [(so'':_,_)]) ->         -- IM
         if so'' == so' then ( ([so,so'],[label,label']), imOthers ) else error "merge-over-move"
-      ((([],[]), imOthers), [ws]) -> case wsPosMatch f ws of  -- EM
-        (([so'],[label']), emOthers) -> ( ([so,so'],[label,label']), imOthers +++ emOthers )
+      ((([],[]), imOthers), [ws]) -> case ws of  -- EM
+        (so':sos',label':labels') -> ( ([so,so'],[label,label']), imOthers +++ (sos',labels'))
 
 -- return workspace if it respects smc, else error
 smc :: WS -> WS

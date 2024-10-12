@@ -47,4 +47,4 @@ heng so = case h' 0 False False [] so of { (_, [], so') -> so' } where
 nonMovingPso nws pws = let (nso:nsos,nlabel:nlabels) = nws in
   let f = (head.fst) nlabel in case wsPosMatch f (nsos,nlabels) of
     (([pso],[plabel]), _) -> if (length (snd plabel)) > 1 then False else True
-    (([],[]), _) -> case wsPosMatch f pws of {(([pso],[plabel]), _) -> if (length (snd plabel)) > 1 then False else True}
+    (([],[]), (_,plabel:_)) -> if (length (snd plabel)) > 1 then False else True
