@@ -45,7 +45,7 @@ match:: [WS] -> (WS,WS)
 match wss = let ([(so:sos,label:labels)],poswss) = wssNeg wss in
   let f = (head.fst) label in case (wsPosMatch f (sos,labels), poswss) of
       ((([so'],[label']), imOthers), [(so'':_,_)]) ->         -- IM
-        if so'' == so' then ( ([so,so'],[label,label']), imOthers ) else error "merge-over-move"
+        if so'' == so' then ( ([so,so'],[label,label']), imOthers ) else error "move-over-merge"
       ((([],[]), imOthers), [ws]) -> case ws of  -- EM
         (so':sos',label':labels') -> ( ([so,so'],[label,label']), imOthers +++ (sos',labels'))
 
