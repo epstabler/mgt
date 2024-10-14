@@ -296,6 +296,7 @@ fig9so =
 
 fig9ws = ppWS (ell fig9so)
 fig9O = ppSO (o_svo fig9so)
+fig9HO = ppSO (o_svo (heng fig9so))
 
 -- examples (11a,b,c) showing effect of strong heads in a complement sequence (Z,Y,X)
 ex11a :: SO  -- head movement: (x y z, Z)
