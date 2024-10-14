@@ -226,9 +226,9 @@ fig2bEll = ppWS (ell fig2bSO)
 fig2bH = ppSO (heng fig2bSO) -- head movement
 fig2bOH = ppSO (o_svo (heng fig2bSO)) -- head movement
 
--- Figure 6 demonstrating multiple occurrences
-fig6so :: SO
-fig6so = S (fromList [
+-- Figure 8 demonstrating multiple occurrences
+fig8so :: SO
+fig8so = S (fromList [
         L ([], ((["T"],["C"]), ("",""))),
         S (fromList
          [ L (["the man"], (([],["D", "K", "Scr"]), ("",""))),
@@ -250,12 +250,12 @@ fig6so = S (fromList [
                            L (["praises"], ((["D"], ["v"]), ("",""))),
                            L (["the man"], (([],["D", "K", "Scr"]), ("",""))) ]) ]) ]) ]) ]) ]) ]) ]) ]) ])
 
-fig6ws = ppWS (ell fig6so)
-fig6O = ppSO (o_svo fig6so)
+fig8ws = ppWS (ell fig8so)
+fig8O = ppSO (o_svo fig8so)
 
--- Figure 7
-fig7so :: SO
-fig7so =
+-- Figure 9 demonstrating remnant movement
+fig9so :: SO
+fig9so =
  S (fromList [
    L ([""], ((["T"], ["C"]), ("",""))),
    S (fromList [
@@ -294,8 +294,8 @@ fig7so =
                    L (["win"], ((["D"], ["V"]), ("",""))),
                    L (["John"], (([],["D", "K"]), ("",""))) ]) ]) ]) ]) ]) ]) ]) ]) ]) ])
 
-fig7ws = ppWS (ell fig7so)
-fig7O = ppSO (o_svo fig7so)
+fig9ws = ppWS (ell fig9so)
+fig9O = ppSO (o_svo fig9so)
 
 -- examples (11a,b,c) showing effect of strong heads in a complement sequence (Z,Y,X)
 ex11a :: SO  -- head movement: (x y z, Z)
@@ -362,8 +362,8 @@ ex11xEll = ppWS (ell ex11x)
 ex11xH = ppSO (heng ex11x)
 ex11xOH = ppSO (o_svo (heng ex11x))
 
---  fig1 but with separate affixes and affix hopping
-fig1x =
+--  fig7 = fig1 but with separate affixes and affix hopping
+fig7 =
    S (fromList [
      L ([""], ((["T"],["C"]), ("",""))),
      S (fromList [
@@ -403,9 +403,9 @@ fig1x =
                                S (fromList [
                                  L (["which"], ((["N"],["D","K","Wh"]), ("",""))),
                                  L (["food"], (([],["N"]), ("",""))) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ])
-fig1xSO = ppSO fig1x
-fig1xEll = ppWS (ell fig1x)
-fig1xOH = ppSO (o_svo (heng fig1x))
+fig7SO = ppSO fig7
+fig7Ell = ppWS (ell fig7)
+fig7OH = ppSO (o_svo (heng fig7))
 
 -- Figure 3
 ex12a :: SO
