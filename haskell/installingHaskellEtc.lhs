@@ -31,11 +31,14 @@ See \href{https://www.haskell.org/ghcup/steps/}{https://www.haskell.org/ghcup/st
 using external packages in {\tt ghci}, etc.
 
 \smallskip
-(I have not tried to install on windows. There, maybe the windows linux subsystem is best.)
+(On windows-11, I was able to install ghcup on windows subsystem ubuntu, just as in
+a standard linux, after first installing:
+build-essential findutils binutils curl gcc g++ libgmp-dev libc-dev libffi-dev make musl-dev ncurses-dev perl
+tar xz-utils.) 
 
 \paragraph{Optional: Literate Haskell}
 To process literate Haskell files (*.lhs), install {\tt lhs2tex} and {\tt unlit},
-used to produce this documentation:\footnote{``A literate programmer is an essayist who writes programs for humans to understand, instead of primarily writing instructions for machines to follow. When programs are written in the recommended style they can be transformed into documents by a document compiler and into efficient code by an algebraic compiler.'' -- Donald Knuth}
+used to produce this documentation:
 \begin{verbatim}
 % stack install unlit
 % stack install lhs2tex
