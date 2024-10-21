@@ -492,6 +492,8 @@ ex11dSO = ppSO ex11d
 ex11dEll = ppWS (ell ex11d)
 ex11dH = ppSO (heng ex11d)
 ex11dOH = ppSO (o_svo (heng ex11d))
+--ex11dHj = ppSO (hjava ex11d)
+--ex11dOHj = ppSO (o_svo (hjava ex11d))
 
 fig4 :: SO
 fig4 = S (fromList [
@@ -514,3 +516,5 @@ fig4SO = ppSO fig4
 fig4Ell = ppWS (ell fig4)
 fig4H = ppSO (heng fig4) -- head movement
 fig4OH = ppSO (o_svo (heng fig4)) -- head movement
+--fig4Hj = ppSO (hjava fig4) -- head movement
+--fig4OHj = ppSO (o_svo (hjava fig4)) -- head movement
