@@ -16,7 +16,7 @@
 
 \paragraph{Learning Haskell.}
 
-For beginners there is a self study courseat
+For beginners there is a self study course at
 \href{https://github.com/system-f/fp-course}{https://github.com/system-f/fp-course}.
 
 If you want a gentle video class, you could try the Youtube
