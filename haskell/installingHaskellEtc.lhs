@@ -16,8 +16,11 @@
 
 \paragraph{Learning Haskell.}
 
-For beginners there is a self study course at
-\href{https://github.com/system-f/fp-course}{https://github.com/system-f/fp-course}
+For beginners there is a self study courseat
+\href{https://github.com/system-f/fp-course}{https://github.com/system-f/fp-course}.
+
+If you want a gentle video class, you could try the Youtube
+\href{https://www.youtube.com/playlist?list=PLu6SHDdOToSe7ZOw-mR55j2GEjkNTQgrd}{Haskell for dilettantes}.
 
 \paragraph{Installing Haskell.}
 On linux or mac, install Haskell with ghcup, from
