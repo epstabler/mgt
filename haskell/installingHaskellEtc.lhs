@@ -14,6 +14,11 @@
 \begin{document}\parindent=0pt
 \phantom{.}\hfill\timestamp
 
+\paragraph{Learning Haskell.}
+
+For beginners there is a self study course at
+\href{https://github.com/system-f/fp-course}{https://github.com/system-f/fp-course}
+
 \paragraph{Installing Haskell.}
 On linux or mac, install Haskell with ghcup, from
 \begin{verbatim}
