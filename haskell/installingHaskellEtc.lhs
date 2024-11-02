@@ -45,7 +45,7 @@ build-essential findutils binutils curl gcc g++ libgmp-dev libc-dev libffi-dev m
 tar xz-utils.) 
 
 \paragraph{Optional: Literate Haskell}
-To process literate Haskell files (*.lhs), install {\tt lhs2tex} and {\tt unlit},
+To process literate Haskell files (*.lhs), install {\tt lhs2TeX} and {\tt unlit},
 used to produce this documentation:
 \begin{verbatim}
 % stack install unlit
@@ -84,15 +84,24 @@ and perhaps more beautiful with {\tt minted}:
 The {\tt -shell-escape} flag for {\tt pdflatex} is required to use the {\tt minted} package.
 
 \vfill\eject
-\paragraph{Also optional: tmux+neovim with haskell language server} \ 
-Nvim provides easy connection with language servers for syntax highlighting,
-code completion, etc. (In emacs, I found this harder to do.)
+\paragraph{Optional: emacs with haskell language server} \ 
+After installing a recent version of emacs,
+inside emacs, I use package-install to install: ```haskell-mode```
+
+Then I get an easy connection with language servers for syntax highlighting,  
+code completion, etc. by adding the eglot initialization recommended here:
+
+\href{https://haskell-language-server.readthedocs.io/en/latest/configuration.html\#emacs}{https://haskell-language-server.readthedocs.io/en/latest/configuration.html\#emacs}
+
+\paragraph{Optional: tmux+neovim with haskell language server} \ 
+Nvim also provides easy connection with language servers for syntax highlighting,
+code completion, etc. 
 Tmux allows you to split screen to run editor plus session
 (plus anything else) all at once, with easy switching.
 The combination is a very flexible and extensible
 IDE, one that is actively used and developed recently.
 
-\paragraph{Ubuntu install}\ 
+\paragraph{Ubuntu nvim}\ 
 Intro youtube vids, useful for those not already familiar with nvim and tmux:
 \begin{itemize}
 \item
@@ -168,7 +177,7 @@ vim.keymap.set('n', '<leader>rf', function() ht.repl.toggle(vim.api.nvim_buf_get
 vim.keymap.set('n', '<leader>rq', ht.repl.quit, opts)
 \end{Verbatim}
 
-\paragraph{Mac install}\ 
+\paragraph{Mac nvim}\ 
 On Mac, first,
 \begin{itemize}
 
