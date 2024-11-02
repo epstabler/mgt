@@ -84,13 +84,14 @@ and perhaps more beautiful with {\tt minted}:
 The {\tt -shell-escape} flag for {\tt pdflatex} is required to use the {\tt minted} package.
 
 \vfill\eject
-\paragraph{Optional: emacs with haskell language server} \ 
+\paragraph{Optional: emacs with haskell language server.} \ 
+This is the development environment I prefer.
 After installing a recent version of emacs,
-inside emacs, I use package-install to install: ```haskell-mode```
-
+inside emacs, I use package-install to install: ``haskell-mode``
 Then I get an easy connection with language servers for syntax highlighting,  
 code completion, etc. by adding the eglot initialization recommended here:
 
+$\phantom{XXX}$
 \href{https://haskell-language-server.readthedocs.io/en/latest/configuration.html\#emacs}{https://haskell-language-server.readthedocs.io/en/latest/configuration.html\#emacs}
 
 \paragraph{Optional: tmux+neovim with haskell language server} \ 
