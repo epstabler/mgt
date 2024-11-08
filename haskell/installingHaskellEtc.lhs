@@ -16,10 +16,10 @@
 
 \paragraph{Learning Haskell.}
 
-For beginners there is a self study course at
+For programmers, there is a self study course at
 \href{https://github.com/system-f/fp-course}{https://github.com/system-f/fp-course}.
 
-If you want a gentle video class, you could try the class by Andres Löh,
+If you want a gentle video class for beginners, you could try the class by Andres Löh,
 \href{https://www.youtube.com/watch?v=3blAsQDT0u8&list=PLD8gywOEY4HauPWPfH0pJPIYUWqi0Gg10}{Introduction to Haskell}
 
 If you want an even gentler video class, you could try the class by Tea Leaves,
@@ -105,7 +105,7 @@ code completion, etc.
 Tmux allows you to split screen to run editor plus session
 (plus anything else) all at once, with easy switching.
 The combination is a very flexible and extensible
-IDE, one that is actively used and developed recently.
+IDE, developed recently.
 
 \paragraph{Ubuntu nvim}\ 
 Intro youtube vids, useful for those not already familiar with nvim and tmux:
