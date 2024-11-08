@@ -23,7 +23,9 @@ If you want a gentle video class, you could try the class by Andres Löh,
 \href{https://www.youtube.com/watch?v=3blAsQDT0u8&list=PLD8gywOEY4HauPWPfH0pJPIYUWqi0Gg10}{Introduction to Haskell}
 
 If you want an even gentler video class, you could try the class by Tea Leaves,
-\href{https://www.youtube.com/playlist?list=PLu6SHDdOToSe7ZOw-mR55j2GEjkNTQgrd}{Haskell for dilettantes}.
+\href{https://www.youtube.com/playlist?list=PLu6SHDdOToSe7ZOw-mR55j2GEjkNTQgrd}{Haskell for dilettantes},
+which works through some of class materials from
+Joachim Breitner's UPenn class CS194.
 
 \paragraph{Installing Haskell.}
 On linux or mac, install Haskell with ghcup, from
