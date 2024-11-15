@@ -5,7 +5,7 @@ import Data.Bifunctor (first)
 
 hfeats :: [String] -> (Int, Bool, [String]) -- returns (noOfProbes, strong?, head without feats)
 hfeats [] = (0, False, [])
-hfeats (s:ss) = let (i,s') = deps s in if length s' > 0 && [last s'] == "*" then (i,True,init s':ss) else (i,False,s':ss)
+hfeats (s:ss) = let (i,s') = deps s in if not (null s') && [last s'] == "*" then (i,True,init s':ss) else (i,False,s':ss)
   where deps s = case s of {('-':s') -> first (1+) (deps s') ; _ -> (0,s)}
 
 heng :: SO -> SO -- h' (noOfHeadsNeededAbove,strong?,split?,headsFromAbove) = (break?,headsFromBelow,so)
