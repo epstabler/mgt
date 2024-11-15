@@ -18,26 +18,26 @@ heng so = case h' 0 False False [] so of { (_, [], so') -> so' } where
       L (w,fs) -> let cat = (head.snd.fst) fs in let (i',strong,w') = hfeats w in
         let i'' = i' + max 0 (i-1) in case (i,i'') of
           (0,0) -> case h' 0 False False [] ((head.fst) pws) of                  -- no chain
-            { (br, [], pso) -> (br, [], S (fromList (L (w, fs) : pso : []))) }
+            { (br, [], pso) -> (br, [], S (fromList [L (w, fs) , pso ])) }
           (0,1) -> let (br,hs',pso) = h' i'' strong False w' ((head.fst) pws) in -- chain begins
-            (br, [], S (fromList (L (hs', fs) : pso : [])))
+            (br, [], S (fromList [L (hs', fs), pso ]))
           (0,_) -> let (br,hs',pso) = h' i'' strong False [] ((head.fst) pws) in -- chain begins
-            (br, [], S (fromList (L (w' ++ (foldl (\acc x -> x : acc) [] hs'), fs) : pso : [])))
+            (br, [], S (fromList [L (w' ++ foldl (flip (:)) [] hs', fs), pso]))
           (1,0) -> let (br,hs',pso) = h' 0 False False [] ((head.fst) pws) in    -- chain ends
             if strong && not hiStrong
-            then (cat == "V", [], S (fromList (L (w' ++ hs, fs) : pso : [])))
-            else (cat == "V", w' ++ hs, S (fromList (L ([], fs) : pso : [])))
+            then (cat == "V", [], S (fromList [L (w' ++ hs, fs), pso]))
+            else (cat == "V", w' ++ hs, S (fromList [L ([], fs), pso]))
           (_,_) -> if sp && (head.snd.fst) fs == "v" && strong
                    then let (br, hs',pso) = h' i'' strong False w' ((head.fst) pws) in
                      if br
-                     then (br, ["DO"] ++ hs, S (fromList (L (hs' , fs) : pso : [])))
+                     then (br, "DO":hs, S (fromList [L (hs' , fs), pso]))
                      else if strong && not hiStrong
-                          then (br, [], S (fromList (L (hs' ++ hs , fs) : pso : [])))
-                          else (br, hs' ++ hs , S (fromList (L ([], fs) : pso : [])))
+                          then (br, [], S (fromList [L (hs' ++ hs , fs), pso]))
+                          else (br, hs' ++ hs , S (fromList [L ([], fs), pso]))
                   else let (br, hs',pso) = h' i'' (max strong hiStrong) sp (w' ++ hs) ((head.fst) pws) in
                       if strong && not hiStrong
-                      then (br, [], S (fromList (L (hs', fs) : pso : [])))
-                      else (br, hs', S (fromList (L ([], fs) : pso : [])))
+                      then (br, [], S (fromList [L (hs', fs), pso]))
+                      else (br, hs', S (fromList [L ([], fs), pso]))
       nso -> if not sp && nonMovingPso nws pws
         then let (br,hs',nso') = h' i hiStrong True hs nso in let psos = map (head.fst) (pws:pwss) in
                (br, hs', S (fromList (nso' : psos)))
@@ -46,5 +46,5 @@ heng so = case h' 0 False False [] so of { (_, [], so') -> so' } where
 
 nonMovingPso nws pws = let (nso:nsos,nlabel:nlabels) = nws in
   let f = (head.fst) nlabel in case wsPosMatch f (nsos,nlabels) of
-    (([pso],[plabel]), _) -> if (length (snd plabel)) > 1 then False else True
-    (([],[]), _) -> case pws of { (_,plabel:_) -> if (length (snd plabel)) > 1 then False else True }
+    (([pso],[plabel]), _) -> length (snd plabel) <= 1
+    (([],[]), _) -> case pws of { (_,plabel:_) -> length (snd plabel) <= 1 }

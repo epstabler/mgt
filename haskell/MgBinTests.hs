@@ -19,16 +19,16 @@ joinstr sep = foldr (\x y -> if length y == 0 then x else (x ++ sep ++ y)) ""
 
 -- convert label to pretty string
 label2str ([],[]) = "[]"
-label2str ([],p) = (joinstr "." p)
-label2str ( n,p) = (joinstr "." n) ++ " -o " ++ (joinstr "." p)
+label2str ([],p) = joinstr "." p
+label2str ( n,p) = joinstr "." n ++ " -o " ++ joinstr "." p
 
 labelAgr2str (label,("","")) = label2str label
 labelAgr2str (label,(phi,"")) = label2str label ++ " -- " ++ phi
 labelAgr2str (label,(phi,k)) = label2str label ++ " -- " ++ phi ++ "-" ++ k
 
 -- convert lexical item to pretty string
-lex2str ([],f) = "([], " ++ (labelAgr2str f) ++ ")"
-lex2str (s,f) = "(" ++ joinstr " " s ++ ", " ++ (labelAgr2str f) ++ ")"
+lex2str ([],f) = "([], " ++ labelAgr2str f ++ ")"
+lex2str (s,f) = "(" ++ joinstr " " s ++ ", " ++ labelAgr2str f ++ ")"
 
 -- pretty print grammar
 ppMg = mapM_ (putStrLn.lex2str)
@@ -54,8 +54,8 @@ g1 = [
 ex00 = ppMg g1
 
 -- convert SO to pretty string
-so2str (S so) = "{" ++ (joinstr ", " (map so2str (elems so))) ++ "}"
-so2str (L (w,labelAgr)) = "(" ++ (joinstr " " w) ++ ", " ++ (labelAgr2str labelAgr) ++ ")"
+so2str (S so) = "{" ++ joinstr ", " (map so2str (elems so)) ++ "}"
+so2str (L (w,labelAgr)) = "(" ++ joinstr " " w ++ ", " ++ (labelAgr2str labelAgr) ++ ")"
 
 -- pretty print SO
 ppSO so = do { ppSO' 0 so ; putStrLn "" }
@@ -117,7 +117,7 @@ fig1a08 = d [lexWS (g1!!0), fig1a07]  -- C Jo knows which food C[+wh] the cat li
 fig1a08ws = ppWS fig1a08
 fig1a = ppSO ((head.fst) fig1a08)
 fig1aEll = ppWS (ell ((head.fst) fig1a08))
-fig1aO = ppSO (o_svo ((head.fst) fig1a08))
+fig1aO = ppSO (oSVO ((head.fst) fig1a08))
 
 gxx :: [Lex]
 gxx = [
@@ -146,7 +146,7 @@ ex0110 = d [ex0108, ex0102] -- MOVE
 ex0111 = ppWS ex0110
 ex0112 = d [ex0110, ex0106] -- MOVE
 ex0113 = ppWS ex0112
-ex0113a = ppSO (o_svo ((head.fst) ex0112))
+ex0113a = ppSO (oSVO ((head.fst) ex0112))
 
 -- deriving complete abab, we continue from ex0106
 ex0114 = d [lexWS (gxx!!3), ex0106]   -- b a a
@@ -166,7 +166,7 @@ ex0127 = ppWS ex0126
 
 ex0128 = ppSO ((head.fst) ex0126)
 ex0129 = ppWS (ell ((head.fst) ex0126))
-ex0129a = ppSO (o_svo ((head.fst) ex0126))
+ex0129a = ppSO (oSVO ((head.fst) ex0126))
 
 -- Figure 2: Head movements (raising and lowering at once)
 fig2a =
@@ -184,7 +184,7 @@ fig2a =
 
 fig2aSO = ppSO fig2a
 fig2aEll = ppWS (ell fig2a)
-fig2aOH = ppSO (o_svo (heng fig2a))
+fig2aOH = ppSO (oSVO (heng fig2a))
 
 fig2bSO = S (fromList [
           S (fromList [
@@ -224,7 +224,7 @@ fig2bSO = S (fromList [
 
 fig2bEll = ppWS (ell fig2bSO)
 fig2bH = ppSO (heng fig2bSO) -- head movement
-fig2bOH = ppSO (o_svo (heng fig2bSO)) -- head movement
+fig2bOH = ppSO (oSVO (heng fig2bSO)) -- head movement
 
 -- Figure 8 demonstrating multiple occurrences
 fig8so :: SO
@@ -251,7 +251,7 @@ fig8so = S (fromList [
                            L (["the man"], (([],["D", "K", "Scr"]), ("",""))) ]) ]) ]) ]) ]) ]) ]) ]) ]) ])
 
 fig8ws = ppWS (ell fig8so)
-fig8O = ppSO (o_svo fig8so)
+fig8O = ppSO (oSVO fig8so)
 
 -- Figure 9 demonstrating remnant movement
 fig9so :: SO
@@ -295,8 +295,8 @@ fig9so =
                    L (["John"], (([],["D", "K"]), ("",""))) ]) ]) ]) ]) ]) ]) ]) ]) ]) ])
 
 fig9ws = ppWS (ell fig9so)
-fig9O = ppSO (o_svo fig9so)
-fig9HO = ppSO (o_svo (heng fig9so))
+fig9O = ppSO (oSVO fig9so)
+fig9OH = ppSO (oSVO (heng fig9so))
 
 -- examples (11a,b,c) showing effect of strong heads in a complement sequence (Z,Y,X)
 ex11a :: SO  -- head movement: (x y z, Z)
@@ -316,7 +316,7 @@ ex11a = S (fromList [
 ex11aSO = ppSO ex11a
 ex11aEll = ppWS (ell ex11a)
 ex11aH = ppSO (heng ex11a) -- head movement
-ex11aOH = ppSO (o_svo (heng ex11a)) -- head movement
+ex11aOH = ppSO (oSVO (heng ex11a)) -- head movement
 
 ex11b :: SO  -- head movement: (x y z, Y)
 ex11b = S (fromList [
@@ -331,7 +331,7 @@ ex11b = S (fromList [
 ex11bSO = ppSO ex11b
 ex11bEll = ppWS (ell ex11b)
 ex11bH = ppSO (heng ex11b) -- head movement
-ex11bOH = ppSO (o_svo (heng ex11b)) -- head movement
+ex11bOH = ppSO (oSVO (heng ex11b)) -- head movement
 
 ex11c :: SO
 ex11c = S (fromList [
@@ -346,7 +346,7 @@ ex11c = S (fromList [
 ex11cSO = ppSO ex11c
 ex11cEll = ppWS (ell ex11c)
 ex11cH = ppSO (heng ex11c)
-ex11cOH = ppSO (o_svo (heng ex11c))
+ex11cOH = ppSO (oSVO (heng ex11c))
 
 ex11x :: SO  -- should be the same as ex11aSO: (x y z, Z)
 ex11x = S (fromList [
@@ -361,7 +361,7 @@ ex11x = S (fromList [
 ex11xSO = ppSO ex11x
 ex11xEll = ppWS (ell ex11x)
 ex11xH = ppSO (heng ex11x)
-ex11xOH = ppSO (o_svo (heng ex11x))
+ex11xOH = ppSO (oSVO (heng ex11x))
 
 --  fig7 = fig1 but with separate affixes and affix hopping
 fig7 =
@@ -406,7 +406,7 @@ fig7 =
                                  L (["food"], (([],["N"]), ("",""))) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ]) ])
 fig7SO = ppSO fig7
 fig7Ell = ppWS (ell fig7)
-fig7OH = ppSO (o_svo (heng fig7))
+fig7OH = ppSO (oSVO (heng fig7))
 
 -- Figure 3
 ex12a :: SO
@@ -429,7 +429,7 @@ ex12a =
 
 ex12SO = ppSO ex12a
 ex12Ell = ppWS (ell ex12a)
-ex12aOH = ppSO (o_svo (heng ex12a))
+ex12aOH = ppSO (oSVO (heng ex12a))
 
 ex12b :: SO
 ex12b = S (fromList [
@@ -453,7 +453,7 @@ ex12b = S (fromList [
 
 ex12bSO = ppSO ex12b
 ex12bEll = ppWS (ell ex12b)
-ex12bOH = ppSO (o_svo (heng ex12b))
+ex12bOH = ppSO (oSVO (heng ex12b))
 
 ex12c :: SO
 ex12c =
@@ -475,7 +475,7 @@ ex12c =
 
 ex12cSO = ppSO ex12c
 ex12cEll = ppWS (ell ex12c)
-ex12cOH = ppSO (o_svo (heng ex12c))
+ex12cOH = ppSO (oSVO (heng ex12c))
 
 -- Javanese-like multiple head movement: z y x
 ex11d :: SO
@@ -491,9 +491,9 @@ ex11d = S (fromList [
 ex11dSO = ppSO ex11d
 ex11dEll = ppWS (ell ex11d)
 ex11dH = ppSO (heng ex11d)
-ex11dOH = ppSO (o_svo (heng ex11d))
+ex11dOH = ppSO (oSVO (heng ex11d))
 --ex11dHj = ppSO (hjava ex11d)
---ex11dOHj = ppSO (o_svo (hjava ex11d))
+--ex11dOHj = ppSO (oSVO (hjava ex11d))
 
 fig4 :: SO
 fig4 = S (fromList [
@@ -515,6 +515,6 @@ fig4 = S (fromList [
 fig4SO = ppSO fig4
 fig4Ell = ppWS (ell fig4)
 fig4H = ppSO (heng fig4) -- head movement
-fig4OH = ppSO (o_svo (heng fig4)) -- head movement
+fig4OH = ppSO (oSVO (heng fig4)) -- head movement
 --fig4Hj = ppSO (hjava fig4) -- head movement
---fig4OHj = ppSO (o_svo (hjava fig4)) -- head movement
+--fig4OHj = ppSO (oSVO (hjava fig4)) -- head movement
