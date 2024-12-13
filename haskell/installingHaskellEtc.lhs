@@ -88,6 +88,24 @@ and perhaps more beautiful with {\tt minted}:
 \medskip
 The {\tt -shell-escape} flag for {\tt pdflatex} is required to use the {\tt minted} package.
 
+\medskip
+{\bf Run the program!} using one of these:
+
+\begin{minted}[linenos=false,frame=leftline,fontsize=\scriptsize]{haskell}
+% runghc installingHaskellEtc.hs
+\end{minted}
+
+\begin{minted}[linenos=false,frame=leftline,fontsize=\scriptsize]{haskell}
+% ghc installingHaskellEtc.hs -o hello
+% ./hello
+\end{minted}
+
+\begin{minted}[linenos=false,frame=leftline,fontsize=\scriptsize]{haskell}
+% ghci
+ghci> :l installingHaskellEtc
+ghci> main
+\end{minted}
+
 \vfill\eject
 \paragraph{Optional: emacs with haskell language server.} \ 
 This is the development environment I prefer.
